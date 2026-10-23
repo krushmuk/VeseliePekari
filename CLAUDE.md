@@ -17,7 +17,7 @@ npm run lint        # oxlint
 npm run preview
 ```
 
-Тестов нет. Параметры адреса для отладки: `?app` (игра «Профессии» без лендинга, как в Telegram), `?unlock` (все главы открыты), `?debug` (консоль eruda на экране). Подробности теста в Telegram — `ochakovo-games/docs/TELEGRAM.md`; план игры «Профессии» — `ochakovo-games/docs/PLAN.md`.
+Тестов нет. Параметры адреса для отладки: `?app` (игра «Профессии» без лендинга, как в Telegram), `?unlock` (все главы открыты), `?prologue` (проиграть пролог заново), `?debug` (консоль eruda на экране). Подробности теста в Telegram — `ochakovo-games/docs/TELEGRAM.md`; план игры «Профессии» — `ochakovo-games/docs/PLAN.md`.
 
 ## Архитектура `ochakovo-games`
 

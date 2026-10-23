@@ -168,7 +168,7 @@ export function LevelScreen({ chapter, levelIndex, onPlay, onLevels, onMap }: Pr
                 >
                   Ещё раз
                 </button>
-                <button type="button" className="btn btn-link" onClick={onLevels}>
+                <button type="button" className="btn btn-red" onClick={onLevels}>
                   К уровням
                 </button>
               </>

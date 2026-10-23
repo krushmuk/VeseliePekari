@@ -18,8 +18,12 @@ interface Props {
 }
 
 /** Оболочка игры «Профессии»: карта глав → глава → уровень */
+/** ?prologue в адресе — проиграть пролог заново, даже если он пройден (для проверки) */
+const replayPrologue = new URLSearchParams(location.search).has('prologue')
+
 export default function CareerApp({ onExit }: Props) {
   const progress = useProgress()
+  const [replay, setReplay] = useState(replayPrologue)
   const [screen, setScreen] = useState<Screen>({ name: 'map' })
   const chapter = 'chapterId' in screen ? CHAPTERS.find(c => c.id === screen.chapterId) : undefined
 
@@ -30,10 +34,17 @@ export default function CareerApp({ onExit }: Props) {
     setScreen({ name: 'level', chapterId, levelIndex, run: Date.now() })
 
   // Пока вступительная миссия не пройдена, карта глав недоступна
-  if (!isPrologueDone(progress)) {
+  if (replay || !isPrologueDone(progress)) {
     return (
       <div className="career">
-        <PrologueScreen onDone={markPrologueDone} onExit={onExit} />
+        <PrologueScreen
+          onDone={chapterId => {
+            if (chapterId) toChapter(chapterId)
+            markPrologueDone()
+            setReplay(false)
+          }}
+          onExit={onExit}
+        />
       </div>
     )
   }
