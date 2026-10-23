@@ -118,8 +118,6 @@ const PERKS: { title: string; text: string; icon: ReactNode; hl?: boolean }[] = 
   },
 ]
 
-const ROLES = ['Оператор линии', 'Лаборант', 'Кладовщик', 'Водитель погрузчика', 'Стажёр в офис', '[другие вакансии]']
-
 const SHOTS = [
   { src: photoMalt, alt: 'Солодовня', caption: 'Здесь растёт солод' },
   { src: photoHops, alt: 'Хмель засыпают в котёл', caption: 'А это — хмель' },
@@ -268,7 +266,6 @@ export function Landing({ onPlay, scrollTo }: Props) {
               <h2 className="h2">
                 Что по <em>условиям</em>
               </h2>
-              <p>Коротко и честно. Подробности по каждой вакансии расскажет HR.</p>
             </div>
             <div className="perks">
               {PERKS.map((perk, i) => (
@@ -282,12 +279,6 @@ export function Landing({ onPlay, scrollTo }: Props) {
                   <h3>{perk.title}</h3>
                   <p>{perk.text}</p>
                 </article>
-              ))}
-            </div>
-            <div className="roles">
-              <b>Куда можно прийти:</b>
-              {ROLES.map(role => (
-                <span key={role}>{role}</span>
               ))}
             </div>
           </div>
@@ -347,9 +338,6 @@ export function Landing({ onPlay, scrollTo }: Props) {
                     {game.title}
                   </button>
                 ))}
-                <a className="btn btn-foam" href="#contacts" onClick={jump}>
-                  Откликнуться
-                </a>
               </div>
             </div>
           </div>

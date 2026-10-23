@@ -26,8 +26,8 @@
   place-items: center;
   border: none;
   border-radius: 10px;
-  background: rgba(27, 31, 46, 0.72);
-  color: var(--on-bg, #fff1d6);
+  background: rgba(43, 45, 47, 0.72);
+  color: var(--on-bg, #F1F2F3);
   pointer-events: auto;
 }
 
@@ -37,8 +37,8 @@
   align-items: center;
   padding: 3px 2px;
   border-radius: 10px;
-  background: rgba(27, 31, 46, 0.72);
-  color: var(--on-bg, #fff1d6);
+  background: rgba(43, 45, 47, 0.72);
+  color: var(--on-bg, #F1F2F3);
 }
 
 .bottling-hud .label {
@@ -54,5 +54,5 @@
 }
 
 .bottling-hud .stat.low .value {
-  color: #ff7a6b;
+  color: #CD004B;
 }

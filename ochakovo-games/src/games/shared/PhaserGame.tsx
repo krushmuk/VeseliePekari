@@ -18,7 +18,7 @@ interface Props {
  * блок и рендерится в полном разрешении экрана (чётко на retina-дисплеях).
  * Сцены получают dpr через game.registry.get('dpr').
  */
-export function PhaserGame({ onCreate, backgroundColor = '#1d1f24', pixelArt = false }: Props) {
+export function PhaserGame({ onCreate, backgroundColor = '#2B2D2F', pixelArt = false }: Props) {
   const parentRef = useRef<HTMLDivElement>(null)
   const onCreateRef = useRef(onCreate)
 

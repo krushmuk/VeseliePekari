@@ -88,9 +88,8 @@ export const maxStars = (chapter: ChapterInfo) => chapter.levels.length * 3
 export const isChapterDone = (p: Save, chapter: ChapterInfo) =>
   levelStars(p, chapter.id, chapter.levels.length - 1) > 0
 
-export function isChapterOpen(p: Save, index: number) {
-  return unlockAll || index === 0 || isChapterDone(p, CHAPTERS[index - 1])
-}
+/** Все главы доступны сразу, порядок прохождения не важен */
+export const isChapterOpen = (_p: Save, _index: number) => true
 
 export function isLevelOpen(p: Save, chapterId: string, index: number) {
   return unlockAll || index === 0 || levelStars(p, chapterId, index - 1) > 0

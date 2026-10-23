@@ -27,7 +27,7 @@ export function MapScreen({ onOpen, onExit }: Props) {
   const total = CHAPTERS.reduce((sum, c) => sum + maxStars(c), 0)
 
   return (
-    <div className="screen">
+    <div className="screen map-screen">
       <TopBar
         subtitle="Очаково"
         title="Профессии"

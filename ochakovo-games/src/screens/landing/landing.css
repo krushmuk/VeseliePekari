@@ -1,10 +1,10 @@
-/* Лендинг ОЧАКОВО: тёмная тема, приглушённая малина (#D6406F) и зелёный акцент для «живых» элементов.
+/* Лендинг ОЧАКОВО: тёмная тема, красный Pantone 192 (#CD004B) и зелёный акцент для «живых» элементов.
    Скругления, пилюли-кнопки и мягкие свечения вместо строгих квадратов — чтобы выглядело молодо.
    Пиктограммы — по-прежнему одной толщины линии, без поворотов (STYLING.md). Все правила внутри .landing. */
 .landing {
-  --red: #D6406F;       /* бренд-малина, приглушённая под тёмный фон */
-  --red-dark: #8E2447;  /* пиктограммы на малиновом, глубокие заливки */
-  --red-deep: #2A1019;  /* почти чёрный бордо для фонов */
+  --red: #CD004B;       /* Pantone 192 */
+  --red-dark: #AB2328;  /* Pantone 7621 */
+  --red-deep: #3B3436;  /* тёмно-серый для заливок */
   --green: #A6F05C;     /* акцент */
   --green-dark: #86D63E;
   --on-green: #12200A;
@@ -12,9 +12,9 @@
   --bg: #0E1013;
   --surface: #181B20;
   --surface-2: #22262D;
-  --gray: #8B939A;
+  --gray: #A2AAAD;
   --ink: #F1F2F3;
-  --muted: #A3AAB0;
+  --muted: #A2AAAD;
   --line: rgba(255,255,255,.1);
   --line-w: rgba(255,255,255,.22);
   --r: 20px;
@@ -26,6 +26,7 @@
 .landing h1, .landing h2, .landing h3, .landing p { margin: 0; }
 .landing .wrap { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
 .landing section { scroll-margin-top: 80px; }
+.landing main { position: relative; z-index: 1; }
 
 .landing .ph { position: relative; overflow: hidden; background: var(--surface-2); border-radius: var(--r); }
 .landing .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
@@ -38,7 +39,7 @@
 .landing .btn-amber { background: var(--green); color: var(--on-green); box-shadow: 0 8px 24px -8px rgba(166,240,92,.55); }
 .landing .btn-amber:hover { background: var(--green-dark); }
 .landing .btn-foam { background: var(--red); color: var(--white); }
-.landing .btn-foam:hover { background: #E2557F; }
+.landing .btn-foam:hover { background: #AB2328; }
 .landing .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line-w); }
 .landing .btn-ghost:hover { border-color: var(--green); color: var(--green); }
 .landing .btn[aria-disabled="true"] { opacity: .6; cursor: not-allowed; }
@@ -55,7 +56,7 @@
 .landing .top-in { max-width: 1240px; margin: 0 auto; padding: 0 24px; min-height: 72px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; }
 .landing .top-actions { display: flex; align-items: center; gap: 8px; justify-self: end; }
 .landing .btn-game { min-height: 44px; padding: 0 20px; gap: 8px; font-size: 14px; background: var(--red); color: var(--white); box-shadow: none; }
-.landing .btn-game:hover { background: #E2557F; }
+.landing .btn-game:hover { background: #AB2328; }
 .landing .btn-game small { font: 800 11px/1 var(--body); background: var(--green); color: var(--on-green); padding: 6px 10px; border-radius: 999px; }
 .landing .top-actions .btn-ghost { min-height: 44px; padding: 0 20px; font-size: 14px; }
 .landing .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
@@ -69,7 +70,7 @@
 .landing .pattern { width: min(100%, 460px); display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .landing .mod { aspect-ratio: 1; display: grid; place-items: center; border-radius: 22px; }
 .landing .mod svg { width: 46%; height: 46%; }
-.landing .mod.active { background: var(--red); color: #000; }
+.landing .mod.active { background: var(--red); color: #fff; }
 .landing .mod.mid { background: var(--surface-2); color: var(--red); }
 .landing .mod.quiet { background: var(--surface); color: var(--gray); }
 .landing .mod.white { background: var(--green); color: var(--on-green); }
@@ -77,9 +78,16 @@
 /* Первый экран — тёмный, с мягкими цветными пятнами */
 .landing .hero { display: flex; flex-direction: column; justify-content: center; min-height: calc(100vh - 76px); min-height: calc(100svh - 76px);
                  padding: 56px 0; color: var(--ink);
-                 background: radial-gradient(60% 55% at 85% 20%, rgba(214,64,111,.38), transparent 70%),
-                             radial-gradient(45% 45% at 5% 95%, rgba(166,240,92,.16), transparent 70%), var(--bg); }
-.landing .hero .wrap { width: 100%; display: flex; flex-wrap: wrap; gap: 48px 64px; align-items: center; }
+                 position: relative; z-index: 0; }
+/* Красный и зелёный огоньки кружат по экрану; не обрезаются границами экрана, секции ниже лежат поверх */
+.landing .hero::before, .landing .hero::after { content: ''; position: absolute; z-index: -1; pointer-events: none; border-radius: 50%; filter: blur(30px); }
+.landing .hero::before { width: 90vmax; height: 90vmax; left: 50%; top: 50%; margin: -45vmax 0 0 -45vmax;
+                         background: radial-gradient(closest-side, rgba(205, 0, 75,.55), transparent 100%); animation: orbit-red 20s linear infinite; }
+.landing .hero::after { width: 90vmax; height: 90vmax; left: 50%; top: 50%; margin: -45vmax 0 0 -45vmax;
+                        background: radial-gradient(closest-side, rgba(166,240,92,.28), transparent 100%); animation: orbit-green 20s linear infinite; }
+@keyframes orbit-red { from { transform: rotate(0deg) translateX(30vw) rotate(0deg); } to { transform: rotate(360deg) translateX(30vw) rotate(-360deg); } }
+@keyframes orbit-green { from { transform: rotate(180deg) translateX(30vw) rotate(-180deg); } to { transform: rotate(540deg) translateX(30vw) rotate(-540deg); } }
+.landing .hero .wrap { position: relative; width: 100%; display: flex; flex-wrap: wrap; gap: 48px 64px; align-items: center; }
 .landing .hero-text { flex: 999 1 520px; display: flex; flex-direction: column; align-items: flex-start; gap: 28px; }
 .landing .hero h1 { font: 800 clamp(40px, 5.6vw, 76px)/1.02 var(--display); letter-spacing: -.03em; }
 .landing .hero h1 em { font-style: normal; color: var(--on-green); background: var(--green); padding: 0 .18em; border-radius: .22em; display: inline-block; transform: rotate(-2deg); }
@@ -106,7 +114,8 @@
 .landing .play-go svg { fill: currentColor; margin-left: 2px; }
 
 /* Условия */
-.landing .work { padding: 96px 0 56px; }
+.landing .work { position: relative; padding: 96px 0 56px; }
+@media (prefers-reduced-motion: reduce) { .landing .hero::before, .landing .hero::after { animation: none; } }
 .landing .sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 36px; }
 .landing .sec-head p { font-size: 17px; line-height: 1.55; color: var(--muted); max-width: 400px; }
 .landing .perks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 14px; }
@@ -138,7 +147,14 @@
 /* Игра — большая малиновая карточка с паттерном */
 .landing .game { padding: 0 24px 96px; }
 .landing .glass-card { max-width: 1240px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 56px; align-items: center; padding: 56px;
-                       border-radius: 40px; color: var(--white); background: radial-gradient(70% 90% at 100% 0%, rgba(214,64,111,.65), transparent 70%), linear-gradient(160deg, #3A1423, var(--red-deep)); border: 1px solid rgba(214,64,111,.35); }
+                       border-radius: 40px; color: var(--white); overflow: hidden;
+                       background: radial-gradient(60% 80% at 100% 0%, rgba(205, 0, 75,.95), transparent 70%), radial-gradient(55% 75% at 0% 100%, rgba(205, 0, 75,.75), transparent 70%), radial-gradient(40% 50% at 50% 50%, rgba(171, 35, 40,.6), transparent 70%), linear-gradient(160deg, #4A3E41, var(--red-deep), #4A3E41, var(--red-deep));
+                       background-size: 200% 200%, 200% 200%, 150% 150%, 300% 300%; background-repeat: no-repeat; animation: glass-flow 7s ease-in-out infinite alternate; }
+@keyframes glass-flow {
+  0% { background-position: 100% 0%, 0% 100%, 0% 100%, 0% 0%; }
+  100% { background-position: 0% 100%, 100% 0%, 100% 0%, 100% 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .landing .glass-card { animation: none; } }
 .landing .pattern-game { order: 2; flex: 0 1 420px; }
 .landing .game-text { order: 1; flex: 1 1 420px; display: flex; flex-direction: column; align-items: flex-start; gap: 22px; }
 .landing .game-text p { font-size: 18px; line-height: 1.55; max-width: 520px; color: rgba(255,255,255,.8); }

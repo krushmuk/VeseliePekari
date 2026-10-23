@@ -1,23 +1,23 @@
 /* Игра «Профессии». Плоский стиль: сплошные заливки, крупные скругления, без текстур.
-   Палитра — из лендинга «Квас»: тёмный квас на фоне, кремовые карточки, лимонные кнопки.
+   Палитра — как на лендинге: тёмный фон, малина #CD004B, зелёный акцент #A6F05C, светлые карточки.
    Всё под .career, чтобы не задевать лендинг и другие игры. */
 .career {
-  --app-bg: #2a1305; /* совпадает с APP_BG в platform/telegram.ts */
-  --app-bg-2: #4a230a;
-  --on-bg: #fff1d6;
-  --on-bg-muted: #ebd3a6;
-  --card: #fff0cf;
-  --card-2: #ffe4a8;
-  --ink: #2a1a0b;
-  --ink-muted: #5e4423;
-  --cta: #ffdd4a;
-  --cta-2: #f5b800;
-  --star: #ffc24d;
-  --star-off: rgba(42, 26, 11, 0.18);
-  --locked: #7a5a3a;
+  --app-bg: #2B2D2F; /* совпадает с APP_BG в platform/telegram.ts */
+  --app-bg-2: #35383B;
+  --on-bg: #F1F2F3;
+  --on-bg-muted: #A2AAAD;
+  --card: #F1F2F3;
+  --card-2: #E1E3E5;
+  --ink: #2B2D2F;
+  --ink-muted: #5B6166;
+  --cta: #A6F05C;
+  --cta-2: #86D63E;
+  --star: #A6F05C;
+  --star-off: rgba(43, 45, 47, 0.18);
+  --locked: #5B6166;
   --c: var(--cta); /* акцент главы, переопределяется на экранах */
-  --display: 'Unbounded Variable', 'Unbounded', system-ui, sans-serif;
-  --body: 'Onest Variable', 'Onest', system-ui, sans-serif;
+  --display: 'Proxima Nova', 'Montserrat Variable', 'Montserrat', 'Tahoma', system-ui, sans-serif;
+  --body: var(--display);
   --radius: 20px;
 
   position: fixed;
@@ -28,9 +28,9 @@
   color: var(--on-bg);
   font-family: var(--body);
   background:
-    radial-gradient(circle at 20% 10%, rgba(255, 194, 77, 0.12) 0 120px, transparent 121px),
-    radial-gradient(circle at 85% 70%, rgba(255, 194, 77, 0.08) 0 180px, transparent 181px),
-    linear-gradient(180deg, var(--app-bg) 0%, var(--app-bg-2) 100%);
+    radial-gradient(60% 40% at 90% 5%, rgba(205, 0, 75, 0.35), transparent 70%),
+    radial-gradient(50% 35% at 5% 95%, rgba(166, 240, 92, 0.14), transparent 70%),
+    var(--app-bg);
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
@@ -76,9 +76,9 @@
 
 @media (min-width: 640px) {
   .career .screen {
-    border-left: 2px solid rgba(255, 241, 214, 0.08);
-    border-right: 2px solid rgba(255, 241, 214, 0.08);
-    background: rgba(42, 19, 5, 0.45);
+    border-left: 2px solid rgba(255, 255, 255, 0.08);
+    border-right: 2px solid rgba(255, 255, 255, 0.08);
+    background: rgba(43, 45, 47, 0.55);
   }
 }
 
@@ -117,7 +117,7 @@
   place-items: center;
   border: none;
   border-radius: 14px;
-  background: rgba(255, 241, 214, 0.1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .career .icon-btn:disabled {
@@ -131,7 +131,7 @@
   gap: 6px;
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(255, 241, 214, 0.1);
+  background: rgba(255, 255, 255, 0.1);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
@@ -176,13 +176,13 @@
 .career .btn-primary {
   background: linear-gradient(180deg, var(--cta), var(--cta-2));
   color: var(--ink);
-  box-shadow: inset 0 -4px 0 rgba(143, 74, 14, 0.25);
+  box-shadow: inset 0 -4px 0 rgba(18, 32, 10, 0.25);
 }
 
 .career .btn-ghost {
   background: transparent;
   color: var(--ink);
-  box-shadow: inset 0 0 0 2px rgba(42, 26, 11, 0.2);
+  box-shadow: inset 0 0 0 2px rgba(43, 45, 47, 0.2);
 }
 
 .career .btn-link {
@@ -199,6 +199,71 @@
 }
 
 /* ---------- Карта глав ---------- */
+/* Фон карты темнее остальных экранов */
+.career:has(.map-screen) {
+  background:
+    radial-gradient(60% 40% at 90% 5%, rgba(205, 0, 75, 0.28), transparent 70%),
+    radial-gradient(50% 35% at 5% 95%, rgba(166, 240, 92, 0.1), transparent 70%),
+    #16171A;
+}
+
+@media (min-width: 640px) {
+  .career .map-screen {
+    background: rgba(22, 23, 26, 0.6);
+  }
+}
+
+/* Тема лендинга: тёмный фон, малина для глав, зелёный акцент для звёзд и «готово» */
+.career .map-screen {
+  --red: #CD004B;
+  --green: #a6f05c;
+  --on-green: #12200a;
+  --surface: #35383B;
+  --surface-2: #404346;
+  --line: rgba(255, 255, 255, 0.1);
+  --display: 'Proxima Nova', 'Montserrat Variable', 'Montserrat', 'Tahoma', system-ui, sans-serif;
+  --body: var(--display);
+  font-family: var(--body);
+}
+
+.career .map-screen .topbar-title small {
+  display: inline-block;
+  margin-bottom: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(166, 240, 92, 0.14);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.career .map-screen .topbar-title h1 {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.career .map-screen .icon-btn {
+  border-radius: 50%;
+  background: var(--surface-2);
+}
+
+.career .map-screen .pill {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  font-weight: 800;
+}
+
+.career .map-screen .pill svg {
+  color: var(--green);
+}
+
+.career .map-screen .greeting {
+  color: var(--on-bg-muted);
+  opacity: 0.8;
+}
+
 .career .map {
   position: relative;
 }
@@ -214,8 +279,8 @@
 
 .career .map-trail path {
   fill: none;
-  stroke: rgba(255, 241, 214, 0.28);
-  stroke-width: 6;
+  stroke: rgba(205, 0, 75, 0.55);
+  stroke-width: 5;
   stroke-dasharray: 2 14;
   stroke-linecap: round;
 }
@@ -241,6 +306,12 @@
   text-align: left;
 }
 
+.career .map-node:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 4px;
+  border-radius: 28px;
+}
+
 .career .map-item.right .map-node {
   flex-direction: row-reverse;
   text-align: right;
@@ -253,12 +324,12 @@
   height: 88px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  background: var(--c);
-  color: var(--ink);
+  border-radius: 28px;
+  background: var(--red);
+  color: #fff;
   box-shadow:
-    inset 0 -6px 0 rgba(0, 0, 0, 0.18),
-    0 0 0 6px rgba(42, 19, 5, 0.9);
+    0 0 0 6px var(--app-bg),
+    0 10px 28px -8px rgba(205, 0, 75, 0.7);
   transition: transform 0.12s;
 }
 
@@ -267,21 +338,22 @@
 }
 
 .career .map-node.locked .map-node-circle {
-  background: var(--locked);
-  color: rgba(255, 241, 214, 0.6);
+  background: var(--surface-2);
+  color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 0 6px var(--app-bg);
 }
 
 .career .map-node-done {
   position: absolute;
-  right: -2px;
-  bottom: -2px;
+  right: -6px;
+  bottom: -6px;
   width: 30px;
   height: 30px;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: #6ccf6c;
-  color: var(--ink);
+  background: var(--green);
+  color: var(--on-green);
   box-shadow: 0 0 0 4px var(--app-bg);
 }
 
@@ -291,11 +363,16 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 12px 14px;
-  border-radius: var(--radius);
-  background: var(--card);
-  color: var(--ink);
-  box-shadow: inset 0 -4px 0 rgba(143, 74, 14, 0.15);
+  padding: 14px 16px;
+  border-radius: 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--on-bg);
+  transition: border-color 0.15s;
+}
+
+.career .map-node:not(:disabled):hover .map-node-card {
+  border-color: var(--green);
 }
 
 .career .map-item.right .map-node-card {
@@ -303,20 +380,25 @@
 }
 
 .career .map-node.locked .map-node-card {
-  background: rgba(255, 241, 214, 0.12);
-  color: var(--on-bg-muted);
-  box-shadow: none;
+  background: transparent;
+  border-style: dashed;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .career .map-node-card small {
   font-size: 12px;
-  opacity: 0.7;
+  font-weight: 800;
+  color: var(--green);
+}
+
+.career .map-node.locked .map-node-card small {
+  color: inherit;
 }
 
 .career .map-node-card b {
   font-family: var(--display);
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 800;
   line-height: 1.2;
 }
 
@@ -325,11 +407,12 @@
   align-items: center;
   gap: 4px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--on-bg-muted);
 }
 
 .career .map-node-stars svg {
-  color: var(--cta-2);
+  color: var(--green);
 }
 
 .career .map-node-hint {
@@ -337,6 +420,15 @@
 }
 
 /* ---------- Глава ---------- */
+/* Тёмные карточки, как на карте глав */
+.career .mentor,
+.career .level-tile {
+  --card: #35383B;
+  --card-2: #404346;
+  --ink: #F1F2F3;
+  --ink-muted: #A2AAAD;
+}
+
 .career .mentor {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -365,8 +457,8 @@
   place-items: center;
   border-radius: 50%;
   background: var(--c);
-  color: var(--ink);
-  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.18);
+  color: #2B2D2F;
+  box-shadow: inset 0 -4px 0 rgba(64, 67, 70, 0.3);
 }
 
 .career .mentor-avatar.big {
@@ -400,7 +492,7 @@
   border-radius: var(--radius);
   background: var(--card);
   color: var(--ink);
-  box-shadow: inset 0 -5px 0 rgba(143, 74, 14, 0.18);
+  box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.25);
   transition: transform 0.1s;
 }
 
@@ -413,7 +505,7 @@
 }
 
 .career .level-tile.locked {
-  background: rgba(255, 241, 214, 0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--on-bg-muted);
   box-shadow: none;
 }
@@ -426,6 +518,7 @@
   place-items: center;
   border-radius: 999px;
   background: var(--c);
+  color: #2B2D2F;
   font-family: var(--display);
   font-weight: 800;
   font-size: 20px;
@@ -456,7 +549,7 @@
   flex: 1;
   min-height: 0;
   border-radius: var(--radius);
-  background: rgba(255, 241, 214, 0.06);
+  background: rgba(255, 255, 255, 0.06);
   overflow: hidden;
 }
 
@@ -466,7 +559,7 @@
   padding: 0;
   gap: 0;
   border: none;
-  background: #1b1f2e;
+  background: #2B2D2F;
 }
 
 .career .level-screen.fullscreen .level-stage {
@@ -494,7 +587,7 @@
   border-radius: 32px;
   background: var(--c);
   color: var(--ink);
-  box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.18);
+  box-shadow: inset 0 -8px 0 rgba(64, 67, 70, 0.3);
 }
 
 .career .stub-goal {
@@ -524,7 +617,7 @@
 
 .career .stub .btn-ghost {
   color: var(--on-bg);
-  box-shadow: inset 0 0 0 2px rgba(255, 241, 214, 0.3);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.3);
 }
 
 /* ---------- Окна поверх экрана ---------- */
@@ -536,7 +629,7 @@
   align-items: flex-end;
   justify-content: center;
   padding: 16px calc(var(--safe-right) + 12px) calc(var(--safe-bottom) + 12px) calc(var(--safe-left) + 12px);
-  background: rgba(20, 9, 2, 0.6);
+  background: #404346;
   animation: c-fade 0.18s ease-out;
 }
 
@@ -653,7 +746,7 @@
   box-shadow:
     0 0 0 8px var(--card),
     0 0 0 12px var(--c),
-    inset 0 -6px 0 rgba(0, 0, 0, 0.18);
+    inset 0 -6px 0 rgba(64, 67, 70, 0.3);
   margin: 8px 0 6px;
 }
 

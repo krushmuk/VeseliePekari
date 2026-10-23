@@ -3,7 +3,7 @@ import type { Platform } from './types'
 import { localStore, onDocumentHidden } from './web'
 
 /** Цвет шапки и фона Telegram под фон игры (см. --app-bg в career.css) */
-const APP_BG = '#2a1305'
+const APP_BG = '#2B2D2F'
 const CLOUD_TIMEOUT = 3000
 
 /**
