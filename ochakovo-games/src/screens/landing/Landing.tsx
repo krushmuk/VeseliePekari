@@ -1,6 +1,5 @@
-import { Fragment, useEffect, useRef, useState, type FormEvent, type MouseEvent, type ReactNode } from 'react'
+import { useEffect, useState, type FormEvent, type MouseEvent, type ReactNode } from 'react'
 import { GAMES } from '../../games/registry'
-import { Bubbles } from './Bubbles'
 import { Choice } from './Choice'
 import photoMalt from '../../assets/landing/a1.jpg'
 import photoHops from '../../assets/landing/a2.jpg'
@@ -37,6 +36,47 @@ const gamepad = (
     <circle cx="16" cy="11" r="1" />
     <circle cx="18" cy="13" r="1" />
   </>
+)
+
+/** Пиктограммы паттерна: сырьё, производство, продукция — одна толщина линии, без поворотов */
+const PICTOS: Record<string, ReactNode> = {
+  bottle: <path d="M10 2h4v4l2 3v12a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9l2-3zM8 13h8M8 17h8" />,
+  wheat: <path d="M12 21V8M12 8c-3 0-4-2-4-4 3 0 4 2 4 4zM12 8c3 0 4-2 4-4-3 0-4 2-4 4zM12 14c-3 0-4-2-4-4 3 0 4 2 4 4zM12 14c3 0 4-2 4-4-3 0-4 2-4 4z" />,
+  hop: <path d="M12 3c3 2 5 5 5 9s-2 7-5 9c-3-2-5-5-5-9s2-7 5-9zM12 3v18M7 12h10" />,
+  gear: (
+    <>
+      <circle cx="12" cy="12" r="3.5" />
+      <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" />
+    </>
+  ),
+  can: <path d="M7 4h10l1 3v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zM6 7h12M6 17h12" />,
+  drop: <path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z" />,
+  berry: (
+    <>
+      <circle cx="9" cy="15" r="4" />
+      <circle cx="16" cy="14" r="3.5" />
+      <path d="M9 11c0-3 2-5 5-6M14 10c1-2 2-3 4-4" />
+    </>
+  ),
+  tank: <path d="M6 5h12v13a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3zM6 10h12M10 3h4v2h-4z" />,
+}
+
+/** Тон модуля: active — красный на красном, mid — красный на сером, quiet — серый на сером */
+type Tone = 'active' | 'mid' | 'quiet' | 'white'
+const PATTERN: { tone: Tone; icon: keyof typeof PICTOS }[] = [
+  { tone: 'active', icon: 'bottle' }, { tone: 'quiet', icon: 'wheat' }, { tone: 'white', icon: 'hop' }, { tone: 'active', icon: 'can' },
+  { tone: 'mid', icon: 'gear' }, { tone: 'active', icon: 'drop' }, { tone: 'quiet', icon: 'tank' }, { tone: 'mid', icon: 'berry' },
+  { tone: 'white', icon: 'wheat' }, { tone: 'quiet', icon: 'can' }, { tone: 'active', icon: 'hop' }, { tone: 'active', icon: 'bottle' },
+]
+
+const Pattern = ({ className }: { className: string }) => (
+  <div className={className} aria-hidden="true">
+    {PATTERN.map((m, i) => (
+      <div key={i} className={`mod ${m.tone}`}>
+        <Icon size={40} width={1.6}>{PICTOS[m.icon]}</Icon>
+      </div>
+    ))}
+  </div>
 )
 
 const PERKS: { title: string; text: string; icon: ReactNode; hl?: boolean }[] = [
@@ -108,11 +148,6 @@ const CONTACTS: { href: string; label: string; value: string; icon: ReactNode }[
   { href: 'https://vk.com/', label: 'VK', value: '[vk.com/ochakovo]', icon: <path d="M21 12a9 9 0 1 1-4-7.5M21 4v5h-5" /> },
 ]
 
-const TICKER = ['КВАС', 'ЛИМОНАДЫ', 'МОРСЫ', 'СИДР', 'ПИВО', 'ВОДА']
-
-/** За сколько пикселей до прилипания шапки начинать анимацию её появления */
-const STICK_EARLY = 120
-
 /** Якорные ссылки прокручивают страницу, не трогая адрес: в VK/Telegram hash может быть занят */
 function jump(e: MouseEvent<HTMLAnchorElement>) {
   const target = document.getElementById(e.currentTarget.hash.slice(1))
@@ -128,24 +163,6 @@ export function Landing({ onPlay, scrollTo }: Props) {
   const play = () => main && onPlay(main.id)
   // Форма-заглушка: подключить отправку (бэкенд / бот) на этапе разработки
   const [sent, setSent] = useState(false)
-  // Шапка стоит под первым экраном и прилипает к верху, когда он уходит. Пока не прилипла,
-  // логотип и кнопки в ней скрыты: они дублируют первый экран
-  const topRef = useRef<HTMLElement>(null)
-  const [stuck, setStuck] = useState(false)
-
-  useEffect(() => {
-    const hero = document.getElementById('top')
-    const bar = topRef.current
-    if (!hero || !bar) return
-    // Шапка «прилипает» чуть раньше, чем низ первого экрана дойдёт до её отступа сверху (с учётом safe-area):
-    // плашка успевает спуститься, пока меню ещё доезжает до верха
-    const offset = Math.ceil(parseFloat(getComputedStyle(bar).top) || 0) + 1 + STICK_EARLY
-    const io = new IntersectionObserver(([entry]) => setStuck(!entry.isIntersecting), {
-      rootMargin: `-${offset}px 0px 0px 0px`,
-    })
-    io.observe(hero)
-    return () => io.disconnect()
-  }, [])
 
   useEffect(() => {
     if (scrollTo) document.getElementById(scrollTo)?.scrollIntoView({ behavior: 'instant' })
@@ -158,18 +175,35 @@ export function Landing({ onPlay, scrollTo }: Props) {
 
   return (
     <div className="landing">
-      <div className="backdrop" aria-hidden="true">
-        <Bubbles count={40} seed={0} />
-      </div>
-
-      <section id="top" className="hero">
-        <Bubbles count={30} seed={1} />
-        <div className="masthead">
-          <div className="brand-plate">
+      <header className="top">
+        <div className="top-in">
+          <a className="logo" href="#top" onClick={jump}>
             <b>ОЧАКОВО</b>
-            <span className="brand-sub">карьера</span>
+            <span>карьера</span>
+          </a>
+          <nav className="nav" aria-label="Разделы">
+            <a href="#work" onClick={jump}>Условия</a>
+            <a href="#game" onClick={jump}>Игра</a>
+            <a href="#contacts" onClick={jump}>Контакты</a>
+          </nav>
+          <div className="top-actions">
+            {main ? (
+              <button type="button" className="btn btn-game" onClick={play}>
+                Сыграть
+              </button>
+            ) : (
+              <a className="btn btn-game" href="#game" onClick={jump}>
+                Сыграть
+              </a>
+            )}
+            <a className="btn btn-ghost" href="#contacts" onClick={jump}>
+              Откликнуться
+            </a>
           </div>
         </div>
+      </header>
+
+      <section id="top" className="hero">
         <div className="wrap">
           <div className="hero-text">
             <h1>
@@ -201,6 +235,7 @@ export function Landing({ onPlay, scrollTo }: Props) {
             </div>
           </div>
           <div className="hero-media">
+            <Pattern className="pattern" />
             <button
               type="button"
               className="play-card"
@@ -226,39 +261,8 @@ export function Landing({ onPlay, scrollTo }: Props) {
         </div>
       </section>
 
-      <header ref={topRef} className={stuck ? 'top stuck' : 'top'}>
-        <div className="top-in">
-          <a className="logo" href="#top" onClick={jump} inert={!stuck}>
-            <b>ОЧАКОВО</b>
-            <span>карьера</span>
-          </a>
-          <nav className="nav" aria-label="Разделы">
-            <a href="#work" onClick={jump}>Условия</a>
-            <a href="#game" onClick={jump}>Игра</a>
-            <a href="#contacts" onClick={jump}>Контакты</a>
-          </nav>
-          <div className="top-actions" inert={!stuck}>
-            {main ? (
-              <button type="button" className="btn btn-game" onClick={play}>
-                <Icon size={18} width={2}>{gamepad}</Icon>
-                Сыграть <small>новинка</small>
-              </button>
-            ) : (
-              <a className="btn btn-game" href="#game" onClick={jump}>
-                <Icon size={18} width={2}>{gamepad}</Icon>
-                Сыграть <small>скоро</small>
-              </a>
-            )}
-            <a className="btn btn-ghost" href="#contacts" onClick={jump} style={{ minHeight: 46, padding: '0 20px' }}>
-              Откликнуться
-            </a>
-          </div>
-        </div>
-      </header>
-
       <main>
         <section id="work" className="work">
-          <Bubbles count={16} seed={2} />
           <div className="wrap">
             <div className="sec-head">
               <h2 className="h2">
@@ -300,30 +304,10 @@ export function Landing({ onPlay, scrollTo }: Props) {
           ))}
         </div>
 
-        {/* Бегущая строка — две ленты крест-накрест, мостик от фото к игре */}
-        <div className="ribbons" aria-hidden="true">
-          {['ticker ticker-back', 'ticker'].map(cls => (
-            <div key={cls} className={cls}>
-              <div className="ticker-track">
-                {[0, 1].map(k => (
-                  <span key={k}>
-                    {TICKER.map(word => (
-                      <Fragment key={word}>
-                        {word} <i />
-                      </Fragment>
-                    ))}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
         {/* Игра — карточка-бокал: отсюда запускаются игры из реестра */}
         <section id="game" className="game">
-          <div className="glass-card on-amber">
-            <div className="foam" aria-hidden="true" />
-            <Bubbles count={30} seed={3} />
+          <div className="glass-card">
+            <Pattern className="pattern pattern-game" />
             <div className="game-text">
               <span className="tag">
                 <i />
@@ -372,7 +356,6 @@ export function Landing({ onPlay, scrollTo }: Props) {
         </section>
 
         <section id="contacts" className="contacts">
-          <Bubbles count={16} seed={4} />
           <div className="wrap">
             <div className="c-left">
               <h2 className="h2">
