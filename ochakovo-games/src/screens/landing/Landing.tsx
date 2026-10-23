@@ -82,7 +82,7 @@ const Pattern = ({ className }: { className: string }) => (
 const PERKS: { title: string; text: string; icon: ReactNode; hl?: boolean }[] = [
   {
     title: 'Официально',
-    text: 'Договор по ТК, белая зарплата [от ХХ ХХХ ₽], отпуск и больничные.',
+    text: 'Трудоустройство по ТК РФ, заработная плата 2 раза в месяц, полисы ДМС',
     icon: <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6M8 14l2.5 2.5L16 11" />,
   },
   {
@@ -92,7 +92,7 @@ const PERKS: { title: string; text: string; icon: ReactNode; hl?: boolean }[] = 
   },
   {
     title: 'Графики под учёбу',
-    text: '[2/2, 5/2, сменный — уточнить]. Можно совмещать с вузом или колледжем.',
+    text: '2/2, 5/2, 1/3. Можно совмещать с вузом или колледжем.',
     icon: (
       <>
         <circle cx="12" cy="12" r="9" />
@@ -106,13 +106,13 @@ const PERKS: { title: string; text: string; icon: ReactNode; hl?: boolean }[] = 
     icon: <path d="M3 17l6-6 4 4 8-8M15 7h6v6" />,
   },
   {
-    title: 'Еда и дорога',
-    text: '[Питание, корпоративный транспорт, спецодежда — уточнить].',
-    icon: <path d="M4 11h16M6 11V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v5M5 11l1 9h12l1-9" />,
+    title: 'Бонусы',
+    text: 'Частичная компенсация питания в корпоративной столовой, льготные путёвки в санаторий',
+    icon: <path d="M3 8h18v4H3zM5 12v9h14v-9M12 8v13M12 8c-2 0-4-1-4-3s3-2 4 3zM12 8c2 0 4-1 4-3s-3-2-4 3z" />,
   },
   {
     title: 'Стажировки',
-    text: 'Для студентов профильных и не очень специальностей. [Сроки набора].',
+    text: 'Для студентов профильных и не очень специальностей. Принимаем молодые таланты круглогодично.',
     icon: <path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z" />,
     hl: true,
   },
@@ -126,15 +126,15 @@ const SHOTS = [
 
 const CONTACTS: { href: string; label: string; value: string; icon: ReactNode }[] = [
   {
-    href: 'tel:+70000000000',
+    href: 'tel:+74957853930',
     label: 'Телефон HR',
-    value: '[+7 ХХХ ХХХ-ХХ-ХХ]',
+    value: '+7 495 785-39-30 (доб. 1155, 2107)',
     icon: <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" />,
   },
   {
-    href: 'mailto:hr@example.ru',
+    href: 'mailto:rabota@ochakovo.ru',
     label: 'Почта',
-    value: '[hr@почта.ru]',
+    value: 'rabota@ochakovo.ru',
     icon: (
       <>
         <rect x="3" y="5" width="18" height="14" rx="2" />
@@ -142,8 +142,18 @@ const CONTACTS: { href: string; label: string; value: string; icon: ReactNode }[
       </>
     ),
   },
-  { href: 'https://t.me/', label: 'Telegram', value: '[@ochakovo_hr]', icon: <path d="M21 4L3 11l6 2 2 6 3-4 5 4z" /> },
-  { href: 'https://vk.com/', label: 'VK', value: '[vk.com/ochakovo]', icon: <path d="M21 12a9 9 0 1 1-4-7.5M21 4v5h-5" /> },
+  {
+    href: 'https://wa.me/79031537740',
+    label: 'WhatsApp',
+    value: '+7 903 153-77-40',
+    icon: <path d="M4 20l1.4-4.2A8 8 0 1 1 8.3 18.7zM9 9c0 3 3 6 6 6l1-1.5-2-1-1 .5c-1-.5-2-1.5-2.5-2.500l.5-1-1-2z" />,
+  },
+  {
+    href: 'https://vk.com/ochakovo_ru',
+    label: 'VK',
+    value: '@ochakovo_ru',
+    icon: <path d="M3 6h3c1 4 3 7 5 7V6h3v4c2 0 3-2 4-4h3c-1 3-2 5-4 6 2 1 3 3 4 6h-3c-1-2-2-3-4-3v3h-2C6 18 3 12 3 6z" />,
+  },
 ]
 
 /** Якорные ссылки прокручивают страницу, не трогая адрес: в VK/Telegram hash может быть занят */
@@ -219,12 +229,12 @@ export function Landing({ onPlay, scrollTo }: Props) {
             </div>
             <div className="facts">
               <div>
-                <b>1978</b>
-                <span>год основания завода</span>
+                <b>45 лет</b>
+                <span>компании «Очаково»</span>
               </div>
               <div>
-                <b>[ХХ+]</b>
-                <span>напитков в линейке</span>
+                <b>30+</b>
+                <span>брендов напитков</span>
               </div>
               <div>
                 <b>1 мин</b>
@@ -320,7 +330,7 @@ export function Landing({ onPlay, scrollTo }: Props) {
                   <b>2</b>Узнаёшь завод изнутри — без экскурсии
                 </li>
                 <li>
-                  <b>3</b>[Бонус лучшим — уточнить]
+                  <b>3</b>Получаешь бонусы по реферальной программе
                 </li>
               </ol>
               <div className="actions">
