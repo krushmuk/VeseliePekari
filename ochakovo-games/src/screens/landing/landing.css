@@ -226,3 +226,26 @@
   .landing .contacts { padding: 64px 0; }
   .landing .form { padding: 24px; }
 }
+
+/* Кнопки запуска игры — в пиксельном ретро-стиле игры: квадратные углы, жёсткие рамки и тени, шрифт Press Start 2P */
+.landing .btn-game, .landing .btn-pixel, .landing .play-card { --pixel: 'Press Start 2P', 'Courier New', monospace; border-radius: 0; transition: none; }
+.landing .btn-game, .landing .btn-pixel { border: 4px solid #000; font-family: var(--pixel); font-weight: 400; font-size: 13px; line-height: 1.3; padding: 0 22px; text-transform: uppercase;
+       box-shadow: inset -4px -4px 0 rgba(0,0,0,.25), inset 4px 4px 0 rgba(255,255,255,.35), 5px 5px 0 #000; }
+.landing .btn-game { min-height: 44px; font-size: 11px; gap: 10px; background: var(--red); color: var(--white); }
+.landing .btn-game:hover { background: #E0105C; }
+.landing .btn-game small { border-radius: 0; font-family: var(--pixel); font-weight: 400; font-size: 8px; }
+.landing .btn-pixel { min-height: 60px; background: var(--green); color: var(--on-green); }
+.landing .btn-pixel:hover { background: #B8F77A; }
+.landing .btn-game:hover, .landing .btn-pixel:hover { transform: none; }
+.landing .btn-game:active, .landing .btn-pixel:active { transform: translate(5px, 5px); box-shadow: none; }
+
+.landing .play-card { border: 4px solid var(--ink); background: var(--surface-2); box-shadow: 6px 6px 0 var(--red); margin: 0 6px 6px 0; }
+.landing .play-card:hover:not(:disabled) { transform: none; border-color: var(--green); }
+.landing .play-card:active:not(:disabled) { transform: translate(6px, 6px); box-shadow: none; }
+.landing .play-thumb { border-radius: 0; border: 4px solid #000; box-shadow: inset -4px -4px 0 rgba(0,0,0,.25), inset 4px 4px 0 rgba(255,255,255,.35); position: relative; }
+.landing .play-thumb::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0,0,0,.3) 0 2px, transparent 2px 4px); }
+.landing .play-info small { font-family: var(--pixel); font-weight: 400; font-size: 9px; }
+.landing .play-info b { font-family: var(--pixel); font-weight: 400; font-size: 14px; line-height: 1.4; }
+.landing .play-go { border-radius: 0; border: 4px solid #000; box-shadow: inset -4px -4px 0 rgba(0,0,0,.25), inset 4px 4px 0 rgba(255,255,255,.35); animation: play-go-blink 1s steps(1, end) infinite; }
+@keyframes play-go-blink { 50% { transform: translateX(3px); } }
+@media (prefers-reduced-motion: reduce) { .landing .play-go { animation: none; } }

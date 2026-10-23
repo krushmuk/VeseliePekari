@@ -38,6 +38,7 @@ export function ChapterScreen({ chapter, onBack, onPlay }: Props) {
   return (
     <div className={`screen chapter-screen${leaving ? ' leaving' : ''}`} style={{ '--c': chapter.color } as CSSProperties}>
       <TopBar
+        subtitle="Очаково"
         title={chapter.title}
         onBack={leave}
         backLabel="К карте"

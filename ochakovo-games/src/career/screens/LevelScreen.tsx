@@ -14,10 +14,10 @@ interface Props {
   onMap: () => void
 }
 
-type Phase = 'brief' | 'play' | 'result'
+type Phase = 'play' | 'result'
 
 /**
- * Общая оболочка уровня: брифинг → игра (пауза) → итог.
+ * Общая оболочка уровня: игра (пауза) → итог.
  * Саму механику рисует компонент главы (chapter.component), пока его нет — заглушка.
  */
 export function LevelScreen({ chapter, levelIndex, onPlay, onLevels, onMap }: Props) {
@@ -26,7 +26,7 @@ export function LevelScreen({ chapter, levelIndex, onPlay, onLevels, onMap }: Pr
   const exam = levelIndex === chapter.levels.length - 1
   const number = CHAPTERS.indexOf(chapter) + 1
 
-  const [phase, setPhase] = useState<Phase>('brief')
+  const [phase, setPhase] = useState<Phase>('play')
   const [paused, setPaused] = useState(false)
   const [result, setResult] = useState<{ stars: number; best: boolean; mastered: boolean } | null>(null)
 
@@ -41,11 +41,10 @@ export function LevelScreen({ chapter, levelIndex, onPlay, onLevels, onMap }: Pr
     [phase],
   )
 
-  const start = () => {
+  // Уровень начинается сразу после нажатия на плитку — это и есть жест для запуска звука
+  useEffect(() => {
     sfx.init()
-    platform.haptic('tap')
-    setPhase('play')
-  }
+  }, [])
 
   const finish = (stars: number) => {
     const best = stars > levelStars(progress, chapter.id, levelIndex)
@@ -88,37 +87,16 @@ export function LevelScreen({ chapter, levelIndex, onPlay, onLevels, onMap }: Pr
       )}
 
       <div className="level-stage">
-        {phase !== 'brief' ? (
-          <Suspense fallback={<div className="loading">Загрузка…</div>}>
-            <Level
-              chapter={chapter}
-              levelIndex={levelIndex}
-              paused={paused || phase !== 'play'}
-              onFinish={finish}
-              onPause={() => setPaused(true)}
-            />
-          </Suspense>
-        ) : null}
+        <Suspense fallback={<div className="loading">Загрузка…</div>}>
+          <Level
+            chapter={chapter}
+            levelIndex={levelIndex}
+            paused={paused || phase !== 'play'}
+            onFinish={finish}
+            onPause={() => setPaused(true)}
+          />
+        </Suspense>
       </div>
-
-      {phase === 'brief' ? (
-        <div className="overlay-c">
-          <div className="sheet">
-            <span className="mentor-avatar big">
-              <ChapterIcon name={chapter.icon} size={52} />
-            </span>
-            <small className="sheet-kicker">{exam ? 'Экзамен' : `Уровень ${levelIndex + 1}`}</small>
-            <h2>{level.title}</h2>
-            <p>{level.goal}</p>
-            <button type="button" className="btn btn-primary" onClick={start}>
-              Начать
-            </button>
-            <button type="button" className="btn btn-link" onClick={onLevels}>
-              К уровням
-            </button>
-          </div>
-        </div>
-      ) : null}
 
       {phase === 'play' && paused ? (
         <div className="overlay-c overlay-pause">

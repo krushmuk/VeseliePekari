@@ -335,16 +335,16 @@ export function Landing({ onPlay, scrollTo }: Props) {
               </ol>
               <div className="actions">
                 {main ? (
-                  <button type="button" className="btn btn-amber" onClick={play}>
+                  <button type="button" className="btn btn-amber btn-pixel" onClick={play}>
                     Играть
                   </button>
                 ) : (
-                  <span className="btn btn-amber" aria-disabled="true">
+                  <span className="btn btn-amber btn-pixel" aria-disabled="true">
                     Играть
                   </span>
                 )}
                 {others.map(game => (
-                  <button key={game.id} type="button" className="btn btn-amber" onClick={() => onPlay(game.id)}>
+                  <button key={game.id} type="button" className="btn btn-amber btn-pixel" onClick={() => onPlay(game.id)}>
                     {game.title}
                   </button>
                 ))}
