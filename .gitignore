@@ -60,3 +60,6 @@ desktop.ini
 
 # Claude Code (локальные настройки)
 .claude/settings.local.json
+
+# Референсы брендбука
+REF/

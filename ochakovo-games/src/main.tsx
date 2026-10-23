@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 // Шрифты лежат в сборке (без запросов к Google Fonts — они нестабильны в РФ)
 import '@fontsource-variable/unbounded'
 import '@fontsource-variable/onest'
+import '@fontsource-variable/montserrat'
 import './index.css'
 import App from './App.tsx'
 import { loadProgress } from './career/progress'
