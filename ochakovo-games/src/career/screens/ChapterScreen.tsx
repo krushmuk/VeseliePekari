@@ -9,6 +9,7 @@ import {
   maxStars,
   useProgress,
 } from '../progress'
+import { ConveyorArt } from './ConveyorArt'
 import { TopBar } from './TopBar'
 
 interface Props {
@@ -47,8 +48,10 @@ export function ChapterScreen({ chapter, onBack, onPlay }: Props) {
         }
       />
 
-      {/* Место под картинку главы */}
-      <div className="chapter-art" aria-hidden="true" />
+      {/* Картинка главы */}
+      <div className="chapter-art" aria-hidden="true">
+        {chapter.id === 'bottling' ? <ConveyorArt /> : null}
+      </div>
 
       <ol className="levels">
         {chapter.levels.map((level, k) => {

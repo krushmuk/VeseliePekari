@@ -2,7 +2,7 @@ import { Suspense, useEffect, useState, type CSSProperties } from 'react'
 import { sfx } from '../../games/shared/sfx'
 import { platform, useBack } from '../../platform'
 import { CHAPTERS, type ChapterInfo } from '../chapters'
-import { ChapterIcon, PauseIcon, Stars } from '../icons'
+import { ChapterIcon, ExitIcon, PauseIcon, RestartIcon, Stars } from '../icons'
 import { isChapterDone, levelStars, recordResult, useProgress } from '../progress'
 import { StubLevel } from './StubLevel'
 
@@ -121,18 +121,25 @@ export function LevelScreen({ chapter, levelIndex, onPlay, onLevels, onMap }: Pr
       ) : null}
 
       {phase === 'play' && paused ? (
-        <div className="overlay-c">
-          <div className="sheet">
+        <div className="overlay-c overlay-pause">
+          <div className="sheet sheet-pause">
             <h2>Пауза</h2>
-            <button type="button" className="btn btn-primary" onClick={() => setPaused(false)}>
-              Продолжить
-            </button>
-            <button type="button" className="btn btn-ghost" onClick={() => onPlay(levelIndex)}>
-              Заново
-            </button>
-            <button type="button" className="btn btn-link" onClick={onLevels}>
-              Выйти к уровням
-            </button>
+            <div className="pause-actions">
+              <button type="button" className="btn btn-ghost btn-icon btn-danger" onClick={onLevels} aria-label="Выйти к уровням">
+                <ExitIcon size={28} />
+              </button>
+              <button type="button" className="btn btn-primary" onClick={() => setPaused(false)}>
+                Продолжить
+              </button>
+              <button
+                type="button"
+                className="btn btn-ghost btn-icon"
+                onClick={() => onPlay(levelIndex)}
+                aria-label="Заново"
+              >
+                <RestartIcon size={28} />
+              </button>
+            </div>
           </div>
         </div>
       ) : null}

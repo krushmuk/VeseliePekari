@@ -2,7 +2,7 @@ import type { Palette } from './pixel'
 
 // Типы упаковок — продукция «Очаково» по референсам REF/напитки.
 // Типы различаются силуэтом (широкая банка, тонкая банка, ПЭТ 0,5 и 1,5 л), цветом и логотипом —
-// не только цветом. Первые LEVEL.types типов участвуют в уровне, поэтому в начале списка
+// не только цветом. Первые LevelConfig.types типов участвуют в уровне, поэтому в начале списка
 // стоят непохожие друг на друга упаковки.
 
 export interface BottleType {
@@ -268,3 +268,37 @@ export const BOTTLE_TYPES: BottleType[] = [
     ],
   },
 ]
+
+/** Индекс бракованной бутылки в текстурах и на ленте — сразу после обычных типов */
+export const DEFECT = BOTTLE_TYPES.length
+
+/** Брак: мутный недолив, кривая этикетка и трещина. В коробку не кладётся, поэтому наклейки нет */
+export const DEFECT_BOTTLE: Pick<BottleType, 'art' | 'colors'> = {
+  art: [
+    '..mmmmmm..',
+    '..mMmMmM..',
+    '..mmmmmm..',
+    '.cccccccc.',
+    '..cccccc..',
+    '..cccccc..',
+    '.cccccccc.',
+    'ccccccccxc',
+    'cccccccxcc',
+    'eeeeeeexee',
+    'eEeEeEexEe',
+    'nnnnnnxnnn',
+    'nnwwnnxnnn',
+    'nnnnnxxnnn',
+    '.nnnnxnnn.',
+    'ttttxttttt',
+    'tttxxtttte',
+    'ttttxttttt',
+    'tttttTTTTT',
+    'TTTTTTTTTT',
+    '.TTTTTTTT.',
+  ],
+  colors: {
+    m: '#8a8f94', M: '#5d6266', c: '#cfe3e6', x: '#1b1f2e', e: '#6f8f3a', E: '#9ab84a',
+    n: '#d9c9a0', w: '#8a6a4a', t: '#6e5a2a', T: '#46381a',
+  },
+}

@@ -1,7 +1,8 @@
 import Phaser from 'phaser'
 import { sfx } from '../../../games/shared/sfx'
 import { platform } from '../../../platform'
-import { BELT, BG, BIN, BOTTLE, BOX, BOX_POINTS, DRAG, FIELD, FILLER, LEVEL, MISS_X, RAMP, SPAWN_X, TIMING } from './config'
+import { DEFECT } from './bottleTypes'
+import { BELT, BG, BIN, BOTTLE, BOX, BOX_POINTS, DRAG, FIELD, FILLER, MISS_X, SPAWN_X, TIMING, levelConfig, type LevelConfig } from './config'
 import { boxScore, boxType, canPut, emptyBox, isComplete, isJammed, put, take, wantedTypes, type BoxState } from './rules'
 import { Spawner } from './spawner'
 import { createSprites, TEX } from './sprites'
@@ -79,7 +80,9 @@ export class BottlingScene extends Phaser.Scene {
   private bridge!: BottlingBridge
   private running = false
 
+  private lv!: LevelConfig
   private spawner!: Spawner
+  private lastDefect = false
   private bottles: Bottle[] = []
   private boxes: Box[] = []
   private press: Press | null = null
@@ -94,17 +97,19 @@ export class BottlingScene extends Phaser.Scene {
   private score = 0
   private misses = 0
   private boxesDone = 0
-  private timeLeft = LEVEL.shift
+  private timeLeft = 0
   private lastHud = ''
 
   constructor() {
     super('bottling')
   }
 
-  init(data: { bridge: BottlingBridge }) {
+  init(data: { bridge: BottlingBridge; levelIndex: number }) {
     this.bridge = data.bridge
+    this.lv = levelConfig(data.levelIndex)
     this.running = true
-    this.spawner = new Spawner(LEVEL.types, LEVEL.capacity, LEVEL.assist, LEVEL.startTypes, LEVEL.newTypeEvery)
+    this.lastDefect = false
+    this.spawner = new Spawner(this.lv.types, this.lv.capacity, this.lv.assist, this.lv.startTypes, this.lv.newTypeEvery)
     this.bottles = []
     this.boxes = []
     this.press = null
@@ -114,7 +119,7 @@ export class BottlingScene extends Phaser.Scene {
     this.score = 0
     this.misses = 0
     this.boxesDone = 0
-    this.timeLeft = LEVEL.shift
+    this.timeLeft = this.lv.shift
     this.elapsed = 0
     this.lastHud = ''
   }
@@ -136,7 +141,7 @@ export class BottlingScene extends Phaser.Scene {
 
     this.selectGfx = this.add.graphics().setDepth(D.top)
 
-    for (let i = 0; i < LEVEL.boxes; i++) this.boxes.push(this.createBox(Math.round(((i + 0.5) * FIELD.w) / LEVEL.boxes)))
+    for (let i = 0; i < this.lv.boxes; i++) this.boxes.push(this.createBox(Math.round(((i + 0.5) * FIELD.w) / this.lv.boxes)))
 
     this.fit()
     this.scale.on('resize', this.fit, this)
@@ -183,14 +188,15 @@ export class BottlingScene extends Phaser.Scene {
 
     // Начало смены медленнее: лента и бутылки плавно разгоняются до обычного темпа
     this.elapsed += dt
-    const pace = RAMP.from + (1 - RAMP.from) * Math.min(1, this.elapsed / RAMP.time)
-    this.beltShift += LEVEL.speed * pace * dt
+    const { ramp } = this.lv
+    const pace = ramp.from + (1 - ramp.from) * Math.min(1, this.elapsed / ramp.time)
+    this.beltShift += this.lv.speed * pace * dt
     const shift = Math.round(this.beltShift)
     this.beltTop.tilePositionX = -shift
 
     this.spawnIn -= dt * pace
     if (this.spawnIn <= 0) {
-      this.spawnIn += LEVEL.interval
+      this.spawnIn += this.lv.interval
       this.spawn()
     }
 
@@ -235,7 +241,10 @@ export class BottlingScene extends Phaser.Scene {
   // ---------- Бутылки ----------
 
   private spawn() {
-    const type = this.spawner.next(wantedTypes(this.boxes.map(b => b.state), LEVEL.capacity))
+    // Брак не идёт два раза подряд
+    const defect = !this.lastDefect && Math.random() < this.lv.defect
+    this.lastDefect = defect
+    const type = defect ? DEFECT : this.spawner.next(wantedTypes(this.boxes.map(b => b.state), this.lv.capacity))
     const img = this.add.image(SPAWN_X, BELT.y, TEX.bottle(type)).setOrigin(0.5, 1).setDepth(D.bottle)
     const offset = SPAWN_X - Math.round(this.beltShift)
     this.bottles.push({ type, offset, x: SPAWN_X, y: BELT.y, state: 'belt', img, home: null })
@@ -249,7 +258,7 @@ export class BottlingScene extends Phaser.Scene {
   }
 
   /** Бутылка доехала до конца ленты и упала в ящик возврата */
-  private miss(b: Bottle) {
+  private miss(b: Bottle, penalty = b.type !== DEFECT) {
     this.removeBottle(b)
     this.tweens.add({
       targets: b.img,
@@ -259,11 +268,12 @@ export class BottlingScene extends Phaser.Scene {
       ease: 'Quad.easeIn',
       onComplete: () => b.img.destroy(),
     })
+    if (!penalty) return
     this.misses++
     sfx.tone(140, 0.25, 'sawtooth', 0.06)
     platform.haptic('error')
     this.cameras.main.shake(120, 0.004)
-    if (this.misses >= LEVEL.maxMisses) this.end(true)
+    if (this.misses >= this.lv.maxMisses) this.end(true)
   }
 
   /** Бутылка на ленте под точкой (с запасом под палец); ближайшая к точке */
@@ -308,7 +318,9 @@ export class BottlingScene extends Phaser.Scene {
     const y = p.worldY
     const hit = this.bottleAt(x, y)
     if (hit) {
-      this.press = { bottle: hit, pointerId: p.id, x, y }
+      // Бракованную подобрали — промах
+      if (hit.type === DEFECT) this.miss(hit, true)
+      else this.press = { bottle: hit, pointerId: p.id, x, y }
       return
     }
     // Тап-тап: выбрана бутылка, теперь тап по коробке
@@ -372,7 +384,8 @@ export class BottlingScene extends Phaser.Scene {
     if (!(i >= 0 && i < this.boxes.length)) return
     let first: Bottle | null = null
     for (const b of this.bottles) if (b.state === 'belt' && (!first || b.x > first.x)) first = b
-    if (first) this.send(first, i)
+    if (first?.type === DEFECT) this.miss(first, true)
+    else if (first) this.send(first, i)
   }
 
   private cancelPress() {
@@ -418,7 +431,7 @@ export class BottlingScene extends Phaser.Scene {
       if (b.home === box) return
       this.takeOut(b)
     }
-    if (canPut(box.state, LEVEL.capacity) === 'ok') {
+    if (canPut(box.state, this.lv.capacity) === 'ok') {
       this.fly(b, box)
       return
     }
@@ -428,7 +441,7 @@ export class BottlingScene extends Phaser.Scene {
       return
     }
     // Бутылка из коробки: назад в свою, если её место заняли — в любую свободную, иначе в ящик возврата
-    const spare = [b.home, ...this.boxes].find(o => o !== box && canPut(o.state, LEVEL.capacity) === 'ok')
+    const spare = [b.home, ...this.boxes].find(o => o !== box && canPut(o.state, this.lv.capacity) === 'ok')
     if (spare) this.fly(b, spare)
     else this.miss(b)
   }
@@ -464,7 +477,7 @@ export class BottlingScene extends Phaser.Scene {
   private layoutBox(box: Box) {
     box.inside.forEach((b, i) => {
       if (b.state !== 'box') return
-      const sx = slotX(i)
+      const sx = this.slotX(i)
       b.x = box.x + sx
       this.tweens.add({ targets: b.img, x: sx, duration: 100, ease: 'Quad.easeOut' })
     })
@@ -490,14 +503,14 @@ export class BottlingScene extends Phaser.Scene {
     b.img.setDepth(D.top)
     this.tweens.add({
       targets: b.img,
-      x: box.x + slotX(box.inside.indexOf(b)),
+      x: box.x + this.slotX(box.inside.indexOf(b)),
       y: BOX.y + insideY - drop,
       duration: TIMING.fly * 1000,
       ease: 'Quad.easeOut',
       onComplete: () => {
         // Пока летела, из коробки могли достать бутылку — место берём заново
         const slot = box.inside.indexOf(b)
-        const sx = slotX(slot)
+        const sx = this.slotX(slot)
         box.view.addAt(b.img, box.view.getIndex(box.front))
         b.img.setPosition(sx, insideY - drop)
         this.tweens.add({
@@ -507,14 +520,14 @@ export class BottlingScene extends Phaser.Scene {
           ease: 'Quad.easeIn',
           onComplete: () => {
             b.state = 'box'
-            b.img.x = slotX(box.inside.indexOf(b))
+            b.img.x = this.slotX(box.inside.indexOf(b))
             b.x = box.x + b.img.x
             b.y = BOX.y + insideY
             sfx.tone(880 + slot * 120, 0.08, 'triangle', 0.07)
             platform.haptic('tap')
             if (box.inside.some(o => o.state !== 'box')) return
-            if (isComplete(box.state, LEVEL.capacity)) this.closeBox(box)
-            else if (isJammed(box.state, LEVEL.capacity)) this.shakeBox(box)
+            if (isComplete(box.state, this.lv.capacity)) this.closeBox(box)
+            else if (isJammed(box.state, this.lv.capacity)) this.shakeBox(box)
           },
         })
       },
@@ -525,7 +538,7 @@ export class BottlingScene extends Phaser.Scene {
     box.state.phase = 'closing'
     if (this.selected?.home === box) this.selected = null
     if (this.press?.bottle.home === box && this.press.bottle.state === 'box') this.press = null
-    const points = boxScore(BOX_POINTS, LEVEL.capacity)
+    const points = boxScore(BOX_POINTS, this.lv.capacity)
     this.score += points
     this.boxesDone++
     sfx.tone(660, 0.12, 'triangle', 0.08)
@@ -621,7 +634,9 @@ export class BottlingScene extends Phaser.Scene {
       g.fillRect(sx > 0 ? cx : cx - 1, sy > 0 ? cy : cy - 4, 1, 4)
     }
   }
-}
 
-/** Смещение места k от центра коробки */
-const slotX = (k: number) => Math.round((k - (LEVEL.capacity - 1) / 2) * (LEVEL.capacity > 3 ? 10 : 12))
+  /** Смещение места k от центра коробки */
+  private slotX(k: number) {
+    return Math.round((k - (this.lv.capacity - 1) / 2) * (this.lv.capacity > 3 ? 10 : 12))
+  }
+}

@@ -75,6 +75,19 @@ export const PauseIcon = ({ size }: { size?: number }) => (
   </Svg>
 )
 
+export const RestartIcon = ({ size }: { size?: number }) => (
+  <Svg size={size}>
+    <path d="M4 12a8 8 0 1 0 2.6-5.9M4 4v4.5h4.5" />
+  </Svg>
+)
+
+/** Стрелка выхода: наружу из рамки, влево */
+export const ExitIcon = ({ size }: { size?: number }) => (
+  <Svg size={size}>
+    <path d="M10 4H5v16h5M9 12h11M16 8l4 4-4 4" transform="matrix(-1 0 0 1 24 0)" />
+  </Svg>
+)
+
 export const CheckIcon = ({ size }: { size?: number }) => (
   <Svg size={size}>
     <path d="m5 12.5 4.5 4.5L19 7.5" />

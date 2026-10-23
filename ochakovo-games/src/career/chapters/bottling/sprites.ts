@@ -1,5 +1,5 @@
 import type Phaser from 'phaser'
-import { BOTTLE_TYPES, type BottleType } from './bottleTypes'
+import { BOTTLE_TYPES, DEFECT, DEFECT_BOTTLE, type BottleType } from './bottleTypes'
 import { BELT, BG, BIN, BOX, FILLER } from './config'
 import { cylinderShade, Grid, PAL, pixelTexture, rectTexture } from './pixel'
 
@@ -28,6 +28,11 @@ export function createSprites(scene: Phaser.Scene) {
     pixelTexture(scene, TEX.bottle(i), rows, pal, cylinderShade(rows, pal))
     pixelTexture(scene, TEX.sticker(i), stickerRows(t), pal)
   })
+  {
+    const pal = { ...PAL, ...DEFECT_BOTTLE.colors }
+    const rows = bottleRows(DEFECT_BOTTLE)
+    pixelTexture(scene, TEX.bottle(DEFECT), rows, pal, cylinderShade(rows, pal))
+  }
   pixelTexture(scene, TEX.stickerEmpty, emptyStickerRows(), PAL)
   pixelTexture(scene, TEX.boxFront, boxFrontRows(BOX.w, BOX.h), PAL)
   pixelTexture(scene, TEX.boxBack, boxBackRows(BOX.w), PAL)
@@ -43,7 +48,7 @@ export function createSprites(scene: Phaser.Scene) {
 // ---------- Бутылки ----------
 
 /** Упаковка по рисунку из bottleTypes.ts с контуром вокруг */
-function bottleRows(t: BottleType) {
+function bottleRows(t: Pick<BottleType, 'art'>) {
   const w = Math.max(...t.art.map(r => r.length))
   return new Grid(w + 2, t.art.length + 2).stamp(t.art, 1, 1).outline().rows()
 }

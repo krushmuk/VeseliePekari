@@ -51,33 +51,70 @@ export const TIMING = {
   returnMinSpeed: 120,
 }
 
-/** Единственный уровень прототипа (этап 1). В этапе 3 переедет в levels.ts */
-export const LEVEL = {
+export interface LevelConfig {
   /** Типов бутылок — всегда больше, чем коробок */
-  types: 4,
+  types: number
   /** Сначала попадаются только эти типы, остальные добавляются по одному */
-  startTypes: 3,
+  startTypes: number
   /** Через сколько бутылок добавляется следующий тип */
-  newTypeEvery: 12,
-  boxes: 3,
+  newTypeEvery: number
+  boxes: number
   /** Сколько одинаковых бутылок закрывают коробку */
-  capacity: 4,
+  capacity: number
   /** Скорость ленты, px/с */
-  speed: 22,
+  speed: number
   /** Интервал между бутылками, с */
-  interval: 1.9,
+  interval: number
   /** Доля бутылок, которые генератор подбирает под уже начатые коробки */
-  assist: 0.4,
+  assist: number
+  /** Доля бракованных бутылок: подобрать такую — промах, а пропустить — нет */
+  defect: number
   /** После стольких промахов смена сорвана */
-  maxMisses: 5,
+  maxMisses: number
   /** Длина смены, с */
-  shift: 75,
+  shift: number
   /** Очки для 1, 2 и 3 звёзд */
-  stars: [500, 800, 1000],
+  stars: [number, number, number]
+  /** Разгон в начале смены: доля обычной скорости на старте и время, за которое она вырастает до 1, с */
+  ramp: { from: number; time: number }
 }
 
-/** Разгон в начале смены: доля обычной скорости на старте и время, за которое она вырастает до 1, с */
-export const RAMP = { from: 0.4, time: 20 }
+/** Уровни главы по порядку; уровни дальше последнего играют его параметры */
+export const LEVELS: LevelConfig[] = [
+  {
+    types: 4,
+    startTypes: 3,
+    newTypeEvery: 12,
+    boxes: 3,
+    capacity: 4,
+    speed: 22,
+    interval: 1.9,
+    assist: 0.4,
+    defect: 0,
+    maxMisses: 5,
+    shift: 75,
+    stars: [500, 800, 1000],
+    ramp: { from: 0.4, time: 20 },
+  },
+  {
+    // все типы с первой секунды, обычный темп сразу, плюс брак — бутылок чуть больше
+    types: 4,
+    startTypes: 4,
+    newTypeEvery: 0,
+    boxes: 3,
+    capacity: 4,
+    speed: 22,
+    interval: 1.65,
+    assist: 0.4,
+    defect: 0.15,
+    maxMisses: 5,
+    shift: 80,
+    stars: [600, 900, 1100],
+    ramp: { from: 1, time: 1 },
+  },
+]
+
+export const levelConfig = (levelIndex: number) => LEVELS[Math.min(levelIndex, LEVELS.length - 1)]
 
 /** Для 3 звёзд промахов должно быть не больше */
 export const PERFECT_MISSES = 1
