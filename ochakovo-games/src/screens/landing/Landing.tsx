@@ -1,0 +1,445 @@
+import { Fragment, useEffect, useRef, useState, type FormEvent, type MouseEvent, type ReactNode } from 'react'
+import { GAMES } from '../../games/registry'
+import { Bubbles } from './Bubbles'
+import { Choice } from './Choice'
+import photoMalt from '../../assets/landing/a1.jpg'
+import photoHops from '../../assets/landing/a2.jpg'
+import photoTeam from '../../assets/landing/c2.jpeg'
+import photoPlant from '../../assets/landing/c3.jpeg'
+import './landing.css'
+
+interface Props {
+  onPlay: (gameId: string) => void
+  /** id секции, к которой прокрутить при открытии (например, после выхода из игры) */
+  scrollTo?: string
+}
+
+const Icon = ({ size = 26, width = 2, children }: { size?: number; width?: number; children: ReactNode }) => (
+  <svg
+    aria-hidden="true"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={width}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    {children}
+  </svg>
+)
+
+const gamepad = (
+  <>
+    <rect x="2" y="6" width="20" height="12" rx="4" />
+    <path d="M7 12h4M9 10v4" />
+    <circle cx="16" cy="11" r="1" />
+    <circle cx="18" cy="13" r="1" />
+  </>
+)
+
+const PERKS: { title: string; text: string; icon: ReactNode; hl?: boolean }[] = [
+  {
+    title: 'Официально',
+    text: 'Договор по ТК, белая зарплата [от ХХ ХХХ ₽], отпуск и больничные.',
+    icon: <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6M8 14l2.5 2.5L16 11" />,
+  },
+  {
+    title: 'Учим с нуля',
+    text: 'Наставник с первой смены. Опыт не нужен — нужно желание разобраться.',
+    icon: <path d="M2 9l10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5" />,
+  },
+  {
+    title: 'Графики под учёбу',
+    text: '[2/2, 5/2, сменный — уточнить]. Можно совмещать с вузом или колледжем.',
+    icon: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3 2" />
+      </>
+    ),
+  },
+  {
+    title: 'Есть куда расти',
+    text: 'От оператора линии до мастера смены, из стажёра — в штат.',
+    icon: <path d="M3 17l6-6 4 4 8-8M15 7h6v6" />,
+  },
+  {
+    title: 'Еда и дорога',
+    text: '[Питание, корпоративный транспорт, спецодежда — уточнить].',
+    icon: <path d="M4 11h16M6 11V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v5M5 11l1 9h12l1-9" />,
+  },
+  {
+    title: 'Стажировки',
+    text: 'Для студентов профильных и не очень специальностей. [Сроки набора].',
+    icon: <path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z" />,
+    hl: true,
+  },
+]
+
+const ROLES = ['Оператор линии', 'Лаборант', 'Кладовщик', 'Водитель погрузчика', 'Стажёр в офис', '[другие вакансии]']
+
+const SHOTS = [
+  { src: photoMalt, alt: 'Солодовня', caption: 'Здесь растёт солод' },
+  { src: photoHops, alt: 'Хмель засыпают в котёл', caption: 'А это — хмель' },
+  { src: photoTeam, alt: 'Команда на экскурсии по заводу', caption: 'А это — твоя будущая команда' },
+]
+
+const CONTACTS: { href: string; label: string; value: string; icon: ReactNode }[] = [
+  {
+    href: 'tel:+70000000000',
+    label: 'Телефон HR',
+    value: '[+7 ХХХ ХХХ-ХХ-ХХ]',
+    icon: <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" />,
+  },
+  {
+    href: 'mailto:hr@example.ru',
+    label: 'Почта',
+    value: '[hr@почта.ru]',
+    icon: (
+      <>
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <path d="M3 7l9 6 9-6" />
+      </>
+    ),
+  },
+  { href: 'https://t.me/', label: 'Telegram', value: '[@ochakovo_hr]', icon: <path d="M21 4L3 11l6 2 2 6 3-4 5 4z" /> },
+  { href: 'https://vk.com/', label: 'VK', value: '[vk.com/ochakovo]', icon: <path d="M21 12a9 9 0 1 1-4-7.5M21 4v5h-5" /> },
+]
+
+const TICKER = ['КВАС', 'ЛИМОНАДЫ', 'МОРСЫ', 'СИДР', 'ПИВО', 'ВОДА']
+
+/** За сколько пикселей до прилипания шапки начинать анимацию её появления */
+const STICK_EARLY = 120
+
+/** Якорные ссылки прокручивают страницу, не трогая адрес: в VK/Telegram hash может быть занят */
+function jump(e: MouseEvent<HTMLAnchorElement>) {
+  const target = document.getElementById(e.currentTarget.hash.slice(1))
+  if (!target) return
+  e.preventDefault()
+  target.scrollIntoView()
+}
+
+export function Landing({ onPlay, scrollTo }: Props) {
+  // Главная игра — первая готовая в реестре
+  const main = GAMES.find(g => g.component)
+  const others = GAMES.filter(g => g.component && g !== main)
+  const play = () => main && onPlay(main.id)
+  // Форма-заглушка: подключить отправку (бэкенд / бот) на этапе разработки
+  const [sent, setSent] = useState(false)
+  // Шапка стоит под первым экраном и прилипает к верху, когда он уходит. Пока не прилипла,
+  // логотип и кнопки в ней скрыты: они дублируют первый экран
+  const topRef = useRef<HTMLElement>(null)
+  const [stuck, setStuck] = useState(false)
+
+  useEffect(() => {
+    const hero = document.getElementById('top')
+    const bar = topRef.current
+    if (!hero || !bar) return
+    // Шапка «прилипает» чуть раньше, чем низ первого экрана дойдёт до её отступа сверху (с учётом safe-area):
+    // плашка успевает спуститься, пока меню ещё доезжает до верха
+    const offset = Math.ceil(parseFloat(getComputedStyle(bar).top) || 0) + 1 + STICK_EARLY
+    const io = new IntersectionObserver(([entry]) => setStuck(!entry.isIntersecting), {
+      rootMargin: `-${offset}px 0px 0px 0px`,
+    })
+    io.observe(hero)
+    return () => io.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (scrollTo) document.getElementById(scrollTo)?.scrollIntoView({ behavior: 'instant' })
+  }, [scrollTo])
+
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    setSent(true)
+  }
+
+  return (
+    <div className="landing">
+      <div className="backdrop" aria-hidden="true">
+        <Bubbles count={40} seed={0} />
+      </div>
+
+      <section id="top" className="hero">
+        <Bubbles count={30} seed={1} />
+        <div className="masthead">
+          <div className="brand-plate">
+            <b>ОЧАКОВО</b>
+            <span className="brand-sub">карьера</span>
+          </div>
+        </div>
+        <div className="wrap">
+          <div className="hero-text">
+            <h1>
+              Делаем квас.
+              <br />И карьеру <em>тоже.</em>
+            </h1>
+            <p>
+              Квас, лимонады, морсы и сидр «Очаково» знает вся страна. Загляни на завод изнутри — сыграй в мини-игру
+              {main ? ` «${main.title}»` : ''} прямо в браузере, а потом решай, хочешь ли к нам в команду.
+            </p>
+            <div className="actions">
+              <a className="btn btn-amber" href="#apply" onClick={jump}>
+                Откликнуться
+              </a>
+            </div>
+            <div className="facts">
+              <div>
+                <b>1978</b>
+                <span>год основания завода</span>
+              </div>
+              <div>
+                <b>[ХХ+]</b>
+                <span>напитков в линейке</span>
+              </div>
+              <div>
+                <b>1 мин</b>
+                <span>одна смена в игре</span>
+              </div>
+            </div>
+          </div>
+          <div className="hero-media">
+            <button
+              type="button"
+              className="play-card"
+              disabled={!main}
+              onClick={play}
+              aria-label={main ? `Играть: ${main.title}` : 'Игра скоро'}
+            >
+              <span className="play-thumb" aria-hidden="true">
+                <Icon size={30} width={2}>{gamepad}</Icon>
+              </span>
+              <span className="play-info">
+                <small>Мини-игра</small>
+                <b>{main ? main.title : 'Скоро'}</b>
+                <span>Пройди путь по профессиям завода</span>
+              </span>
+              <span className="play-go" aria-hidden="true">
+                <Icon size={22} width={2.4}>
+                  <path d="M8 5l11 7-11 7z" />
+                </Icon>
+              </span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <header ref={topRef} className={stuck ? 'top stuck' : 'top'}>
+        <div className="top-in">
+          <a className="logo" href="#top" onClick={jump} inert={!stuck}>
+            <b>ОЧАКОВО</b>
+            <span>карьера</span>
+          </a>
+          <nav className="nav" aria-label="Разделы">
+            <a href="#work" onClick={jump}>Условия</a>
+            <a href="#game" onClick={jump}>Игра</a>
+            <a href="#contacts" onClick={jump}>Контакты</a>
+          </nav>
+          <div className="top-actions" inert={!stuck}>
+            {main ? (
+              <button type="button" className="btn btn-game" onClick={play}>
+                <Icon size={18} width={2}>{gamepad}</Icon>
+                Сыграть <small>новинка</small>
+              </button>
+            ) : (
+              <a className="btn btn-game" href="#game" onClick={jump}>
+                <Icon size={18} width={2}>{gamepad}</Icon>
+                Сыграть <small>скоро</small>
+              </a>
+            )}
+            <a className="btn btn-ghost" href="#contacts" onClick={jump} style={{ minHeight: 46, padding: '0 20px' }}>
+              Откликнуться
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section id="work" className="work">
+          <Bubbles count={16} seed={2} />
+          <div className="wrap">
+            <div className="sec-head">
+              <h2 className="h2">
+                Что по <em>условиям</em>
+              </h2>
+              <p>Коротко и честно. Подробности по каждой вакансии расскажет HR.</p>
+            </div>
+            <div className="perks">
+              {PERKS.map((perk, i) => (
+                <article key={perk.title} className={perk.hl ? 'perk hl' : 'perk'}>
+                  <div className="perk-top">
+                    <div className="ic">
+                      <Icon>{perk.icon}</Icon>
+                    </div>
+                    <span className="n">{String(i + 1).padStart(2, '0')}</span>
+                  </div>
+                  <h3>{perk.title}</h3>
+                  <p>{perk.text}</p>
+                </article>
+              ))}
+            </div>
+            <div className="roles">
+              <b>Куда можно прийти:</b>
+              {ROLES.map(role => (
+                <span key={role}>{role}</span>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <div className="wrap gallery" role="group" aria-label="Фото с производства">
+          {SHOTS.map(shot => (
+            <figure key={shot.caption} className="shot">
+              <div className="ph">
+                <img src={shot.src} alt={shot.alt} loading="lazy" />
+              </div>
+              <figcaption>{shot.caption}</figcaption>
+            </figure>
+          ))}
+        </div>
+
+        {/* Бегущая строка — две ленты крест-накрест, мостик от фото к игре */}
+        <div className="ribbons" aria-hidden="true">
+          {['ticker ticker-back', 'ticker'].map(cls => (
+            <div key={cls} className={cls}>
+              <div className="ticker-track">
+                {[0, 1].map(k => (
+                  <span key={k}>
+                    {TICKER.map(word => (
+                      <Fragment key={word}>
+                        {word} <i />
+                      </Fragment>
+                    ))}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Игра — карточка-бокал: отсюда запускаются игры из реестра */}
+        <section id="game" className="game">
+          <div className="glass-card on-amber">
+            <div className="foam" aria-hidden="true" />
+            <Bubbles count={30} seed={3} />
+            <div className="game-text">
+              <span className="tag">
+                <i />
+                {main ? 'УЖЕ МОЖНО ИГРАТЬ' : 'СКОРО ЗАПУСК'}
+              </span>
+              <h2 className="h2">
+                Отработай смену.
+                <br />В игре.
+              </h2>
+              <p>
+                Мини-игра прямо в браузере и на телефоне: примерь профессии завода, узнай, как он устроен и какие
+                тут условия. Пара минут — и ты в теме.
+              </p>
+              <ol className="steps">
+                <li>
+                  <b>1</b>Играешь с телефона или компа
+                </li>
+                <li>
+                  <b>2</b>Узнаёшь завод изнутри — без экскурсии
+                </li>
+                <li>
+                  <b>3</b>[Бонус лучшим — уточнить]
+                </li>
+              </ol>
+              <div className="actions">
+                {main ? (
+                  <button type="button" className="btn btn-amber" onClick={play}>
+                    Играть
+                  </button>
+                ) : (
+                  <span className="btn btn-amber" aria-disabled="true">
+                    Играть
+                  </span>
+                )}
+                {others.map(game => (
+                  <button key={game.id} type="button" className="btn btn-amber" onClick={() => onPlay(game.id)}>
+                    {game.title}
+                  </button>
+                ))}
+                <a className="btn btn-foam" href="#contacts" onClick={jump}>
+                  Откликнуться
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="contacts" className="contacts">
+          <Bubbles count={16} seed={4} />
+          <div className="wrap">
+            <div className="c-left">
+              <h2 className="h2">
+                Пиши. Звони.
+                <br />
+                <em>Заходи.</em>
+              </h2>
+              <p>Отвечаем в рабочие дни. Можно просто спросить — резюме не обязательно.</p>
+              <div className="c-list">
+                {CONTACTS.map(c => (
+                  <a
+                    key={c.label}
+                    className="c-item"
+                    href={c.href}
+                    {...(c.href.startsWith('http') ? { target: '_blank', rel: 'noreferrer' } : {})}
+                  >
+                    <span className="ic">
+                      <Icon size={20}>{c.icon}</Icon>
+                    </span>
+                    <span>
+                      <small>{c.label}</small>
+                      <strong>{c.value}</strong>
+                    </span>
+                  </a>
+                ))}
+              </div>
+              <div className="ph place">
+                <img src={photoPlant} alt="Здание завода Очаково" loading="lazy" />
+                <div className="pin">
+                  <small>Адрес</small>
+                  <b>Москва, ул. Рябиновая, 44</b>
+                </div>
+              </div>
+            </div>
+            <form id="apply" className="form" onSubmit={onSubmit}>
+              <h3>Не любишь звонить?</h3>
+              <p>Оставь контакт — HR напишет сам и расскажет про вакансии. Без анкет на пять страниц.</p>
+              <div className="field">
+                <label htmlFor="e-name">Как тебя зовут</label>
+                <input id="e-name" name="name" autoComplete="given-name" required />
+              </div>
+              <div className="field">
+                <label htmlFor="e-contact">Телефон или Telegram</label>
+                <input id="e-contact" name="contact" required />
+              </div>
+              <div className="field">
+                <label htmlFor="e-dir">Что интересно</label>
+                <Choice
+                  id="e-dir"
+                  name="direction"
+                  options={['Производство', 'Лаборатория', 'Склад и логистика', 'Стажировка в офисе', 'Пока не знаю — расскажите']}
+                />
+              </div>
+              <button className="btn btn-amber" type="submit">
+                {sent ? 'Готово! Скоро напишем' : 'Отправить'}
+              </button>
+            </form>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div className="wrap">
+          <span>© Очаково, 2026</span>
+          <span>Чрезмерное употребление алкоголя вредит вашему здоровью</span>
+        </div>
+      </footer>
+    </div>
+  )
+}

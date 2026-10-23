@@ -1,0 +1,702 @@
+/* Игра «Профессии». Плоский стиль: сплошные заливки, крупные скругления, без текстур.
+   Палитра — из лендинга «Квас»: тёмный квас на фоне, кремовые карточки, лимонные кнопки.
+   Всё под .career, чтобы не задевать лендинг и другие игры. */
+.career {
+  --app-bg: #2a1305; /* совпадает с APP_BG в platform/telegram.ts */
+  --app-bg-2: #4a230a;
+  --on-bg: #fff1d6;
+  --on-bg-muted: #ebd3a6;
+  --card: #fff0cf;
+  --card-2: #ffe4a8;
+  --ink: #2a1a0b;
+  --ink-muted: #5e4423;
+  --cta: #ffdd4a;
+  --cta-2: #f5b800;
+  --star: #ffc24d;
+  --star-off: rgba(42, 26, 11, 0.18);
+  --locked: #7a5a3a;
+  --c: var(--cta); /* акцент главы, переопределяется на экранах */
+  --display: 'Unbounded Variable', 'Unbounded', system-ui, sans-serif;
+  --body: 'Onest Variable', 'Onest', system-ui, sans-serif;
+  --radius: 20px;
+
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  color: var(--on-bg);
+  font-family: var(--body);
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255, 194, 77, 0.12) 0 120px, transparent 121px),
+    radial-gradient(circle at 85% 70%, rgba(255, 194, 77, 0.08) 0 180px, transparent 181px),
+    linear-gradient(180deg, var(--app-bg) 0%, var(--app-bg-2) 100%);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.career h1,
+.career h2,
+.career p {
+  margin: 0;
+}
+
+.career button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.career button:disabled {
+  cursor: default;
+}
+
+.career .loading {
+  position: absolute;
+  color: var(--on-bg-muted);
+}
+
+/* Вертикальная колонка: на телефоне во весь экран, на ПК — по центру */
+.career .screen {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: calc(var(--safe-top) + 12px) calc(var(--safe-right) + 16px) calc(var(--safe-bottom) + 24px)
+    calc(var(--safe-left) + 16px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .career .screen {
+    border-left: 2px solid rgba(255, 241, 214, 0.08);
+    border-right: 2px solid rgba(255, 241, 214, 0.08);
+    background: rgba(42, 19, 5, 0.45);
+  }
+}
+
+/* ---------- Шапка ---------- */
+.career .topbar,
+.career .level-hud {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+}
+
+.career .topbar-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.career .topbar-title small {
+  display: block;
+  color: var(--on-bg-muted);
+  font-size: 13px;
+}
+
+.career .topbar-title h1 {
+  font-family: var(--display);
+  font-size: clamp(18px, 5.2vw, 24px);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.career .icon-btn {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 14px;
+  background: rgba(255, 241, 214, 0.1);
+}
+
+.career .icon-btn:disabled {
+  opacity: 0.35;
+}
+
+.career .pill {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 241, 214, 0.1);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.career .pill svg {
+  color: var(--star);
+}
+
+.career .greeting {
+  color: var(--on-bg-muted);
+}
+
+/* ---------- Звёзды ---------- */
+.career .stars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.career .stars .on {
+  color: var(--star);
+}
+
+.career .stars .off {
+  color: var(--star-off);
+}
+
+/* ---------- Кнопки ---------- */
+.career .btn {
+  min-height: 52px;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 17px;
+  transition: transform 0.1s;
+}
+
+.career .btn:active {
+  transform: scale(0.97);
+}
+
+.career .btn-primary {
+  background: linear-gradient(180deg, var(--cta), var(--cta-2));
+  color: var(--ink);
+  box-shadow: inset 0 -4px 0 rgba(143, 74, 14, 0.25);
+}
+
+.career .btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 2px rgba(42, 26, 11, 0.2);
+}
+
+.career .btn-link {
+  min-height: 44px;
+  background: none;
+  color: var(--ink-muted);
+  font-weight: 500;
+}
+
+.career .btn-small {
+  min-height: 40px;
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
+/* ---------- Карта глав ---------- */
+.career .map {
+  position: relative;
+}
+
+.career .map-trail {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.career .map-trail path {
+  fill: none;
+  stroke: rgba(255, 241, 214, 0.28);
+  stroke-width: 6;
+  stroke-dasharray: 2 14;
+  stroke-linecap: round;
+}
+
+.career .map-list {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 8px 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.career .map-node {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+}
+
+.career .map-item.right .map-node {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.career .map-node-circle {
+  position: relative;
+  flex: none;
+  width: 88px;
+  height: 88px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--c);
+  color: var(--ink);
+  box-shadow:
+    inset 0 -6px 0 rgba(0, 0, 0, 0.18),
+    0 0 0 6px rgba(42, 19, 5, 0.9);
+  transition: transform 0.12s;
+}
+
+.career .map-node:not(:disabled):active .map-node-circle {
+  transform: scale(0.94);
+}
+
+.career .map-node.locked .map-node-circle {
+  background: var(--locked);
+  color: rgba(255, 241, 214, 0.6);
+}
+
+.career .map-node-done {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #6ccf6c;
+  color: var(--ink);
+  box-shadow: 0 0 0 4px var(--app-bg);
+}
+
+.career .map-node-card {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: inset 0 -4px 0 rgba(143, 74, 14, 0.15);
+}
+
+.career .map-item.right .map-node-card {
+  align-items: flex-end;
+}
+
+.career .map-node.locked .map-node-card {
+  background: rgba(255, 241, 214, 0.12);
+  color: var(--on-bg-muted);
+  box-shadow: none;
+}
+
+.career .map-node-card small {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.career .map-node-card b {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.career .map-node-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.career .map-node-stars svg {
+  color: var(--cta-2);
+}
+
+.career .map-node-hint {
+  font-size: 13px;
+}
+
+/* ---------- Глава ---------- */
+.career .mentor {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px 14px;
+  align-items: center;
+  padding: 14px;
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--ink);
+}
+
+.career .mentor p {
+  color: var(--ink-muted);
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+.career .mentor .btn {
+  grid-column: 1 / -1;
+}
+
+.career .mentor-avatar {
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--c);
+  color: var(--ink);
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.18);
+}
+
+.career .mentor-avatar.big {
+  width: 88px;
+  height: 88px;
+}
+
+.career .levels {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.career .levels .exam {
+  grid-column: 1 / -1;
+}
+
+.career .level-tile {
+  width: 100%;
+  min-height: 112px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 6px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: inset 0 -5px 0 rgba(143, 74, 14, 0.18);
+  transition: transform 0.1s;
+}
+
+.career .level-tile:not(:disabled):active {
+  transform: scale(0.96);
+}
+
+.career .level-tile.passed {
+  background: var(--card-2);
+}
+
+.career .level-tile.locked {
+  background: rgba(255, 241, 214, 0.1);
+  color: var(--on-bg-muted);
+  box-shadow: none;
+}
+
+.career .level-num {
+  min-width: 44px;
+  height: 44px;
+  padding: 0 12px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--c);
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 20px;
+}
+
+.career .exam .level-num {
+  font-size: 15px;
+}
+
+.career .level-tile.locked .level-num {
+  background: none;
+}
+
+.career .level-title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* ---------- Уровень ---------- */
+.career .level-screen {
+  overflow: hidden;
+}
+
+.career .level-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  border-radius: var(--radius);
+  background: rgba(255, 241, 214, 0.06);
+  overflow: hidden;
+}
+
+/* Уровень на весь экран: только игра, без шапки, отступов и фона оболочки */
+.career .level-screen.fullscreen {
+  max-width: none;
+  padding: 0;
+  gap: 0;
+  border: none;
+  background: #1b1f2e;
+}
+
+.career .level-screen.fullscreen .level-stage {
+  border-radius: 0;
+  background: none;
+}
+
+.career .stub {
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.career .stub-icon {
+  width: 120px;
+  height: 120px;
+  display: grid;
+  place-items: center;
+  border-radius: 32px;
+  background: var(--c);
+  color: var(--ink);
+  box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.18);
+}
+
+.career .stub-goal {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.career .stub-mechanic,
+.career .stub-timer {
+  color: var(--on-bg-muted);
+  font-size: 14px;
+}
+
+.career .stub-timer {
+  font-variant-numeric: tabular-nums;
+}
+
+.career .stub-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 8px;
+}
+
+.career .stub .btn-ghost {
+  color: var(--on-bg);
+  box-shadow: inset 0 0 0 2px rgba(255, 241, 214, 0.3);
+}
+
+/* ---------- Окна поверх экрана ---------- */
+.career .overlay-c {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px calc(var(--safe-right) + 12px) calc(var(--safe-bottom) + 12px) calc(var(--safe-left) + 12px);
+  background: rgba(20, 9, 2, 0.6);
+  animation: c-fade 0.18s ease-out;
+}
+
+@media (min-height: 640px) and (min-width: 640px) {
+  .career .overlay-c {
+    align-items: center;
+  }
+}
+
+.career .sheet {
+  width: 100%;
+  max-width: 440px;
+  max-height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 24px 20px 16px;
+  border-radius: 28px;
+  background: var(--card);
+  color: var(--ink);
+  text-align: center;
+  animation: c-rise 0.22s ease-out;
+}
+
+.career .sheet > .mentor-avatar,
+.career .sheet > .badge,
+.career .sheet > .stars {
+  align-self: center;
+}
+
+.career .sheet h2 {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.career .sheet p {
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+
+.career .sheet .stars .off {
+  color: var(--star-off);
+}
+
+.career .sheet .stars .on {
+  color: var(--cta-2);
+}
+
+.career .sheet-kicker {
+  color: var(--ink-muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.career .sheet-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+}
+
+.career .sheet-hero b {
+  display: block;
+  font-family: var(--display);
+  font-size: 18px;
+}
+
+.career .sheet-hero small {
+  color: var(--ink-muted);
+}
+
+.career .speech {
+  min-height: 4.4em;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #fff;
+  text-align: left;
+  font-size: 16px;
+  color: var(--ink) !important;
+}
+
+.career .dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 4px 0;
+}
+
+.career .dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--star-off);
+}
+
+.career .dots .on {
+  width: 22px;
+  border-radius: 4px;
+  background: var(--c);
+}
+
+.career .badge {
+  width: 112px;
+  height: 112px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow:
+    0 0 0 8px var(--card),
+    0 0 0 12px var(--c),
+    inset 0 -6px 0 rgba(0, 0, 0, 0.18);
+  margin: 8px 0 6px;
+}
+
+.career .facts {
+  margin: 4px 0 6px;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.career .facts li {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #fff;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+@keyframes c-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes c-rise {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .career *,
+  .career *::before,
+  .career *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.career .stub .sheet-kicker {
+  color: var(--on-bg-muted);
+}

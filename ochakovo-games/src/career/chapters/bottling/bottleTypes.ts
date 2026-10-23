@@ -1,0 +1,270 @@
+import type { Palette } from './pixel'
+
+// Типы упаковок — продукция «Очаково» по референсам REF/напитки.
+// Типы различаются силуэтом (широкая банка, тонкая банка, ПЭТ 0,5 и 1,5 л), цветом и логотипом —
+// не только цветом. Первые LEVEL.types типов участвуют в уровне, поэтому в начале списка
+// стоят непохожие друг на друга упаковки.
+
+export interface BottleType {
+  name: string
+  /**
+   * Рисунок без контура (контур и объём добавляются при сборке спрайта).
+   * Символы — цвета из `colors`, а также сталь из общей палитры: W, S, s, d. '.' — прозрачно
+   */
+  art: string[]
+  colors: Palette
+  /** Наклейка на коробке 9×9 — логотип или знак упаковки в её цветах */
+  sticker: string[]
+}
+
+/** Крышка и дно банки шириной w: обод, светлая крышка, тень под ней */
+const canTop = (w: number) => ['.' + 'S'.repeat(w - 2) + '.', 'W'.repeat(w), 's'.repeat(w)]
+const canBottom = (w: number) => ['S'.repeat(w), '.' + 's'.repeat(w - 2) + '.']
+
+const KVASS = { y: '#f2b52c', Y: '#ffd966', r: '#d23a2e', b: '#5a2a1a', g: '#3fa34a', w: '#fff4dc' }
+
+export const BOTTLE_TYPES: BottleType[] = [
+  {
+    name: 'Квас «Очаковский»',
+    // банка 0,5 л: золотой фон, красно-коричневое «О», зелёная лента с названием, колосья внизу
+    art: [
+      ...canTop(10),
+      'yyyyyyyyyy',
+      'yyyyYyyyyy',
+      'yyyrrrryyy',
+      'yyrrrrrryy',
+      'yrrryyrrry',
+      'yrrYYYYrry',
+      'gggggggggg',
+      'gwwgwwwgwg',
+      'gggggggggg',
+      'ybbYYYYbby',
+      'ybbbyybbby',
+      'yybbbbbbyy',
+      'yyybbbbyyy',
+      'yyyyyyyyyy',
+      'yYyyyyyyyy',
+      'YyYyyyyyyy',
+      'yYyyyyyyyy',
+      ...canBottom(10),
+    ],
+    colors: KVASS,
+    sticker: [
+      'yyyyyyyyy',
+      'yyrrrrryy',
+      'yrryyyrry',
+      'ggggggggg',
+      'gwgwwgwgg',
+      'ggggggggg',
+      'ybbyyybby',
+      'yybbbbbyy',
+      'yyyyyyyyy',
+    ],
+  },
+  {
+    name: 'Cool Cola',
+    // тонкая банка 0,33 л: диагональ синий/красный, белая «C», название внизу
+    art: [
+      ...canTop(8),
+      'uuuuuuuu',
+      'uuuuuuur',
+      'uuwwwwur',
+      'uwwuuurr',
+      'uwwuurrr',
+      'uwwuurrr',
+      'uwwurrrr',
+      'uwwrrrrr',
+      'uuwwwwrr',
+      'uurrrrrr',
+      'urwwrwwr',
+      'urrrrrrr',
+      'rwwrwwrr',
+      'rrrrrrrr',
+      'rrrrrrrr',
+      'rrrrrrwr',
+      'rrrrrrrr',
+      'rrrrrrrr',
+      ...canBottom(8),
+    ],
+    colors: { u: '#2f8fd8', r: '#e0303a', w: '#ffffff' },
+    sticker: [
+      'uuuuuuuur',
+      'uuwwwwurr',
+      'uwwuuurrr',
+      'uwwuurrrr',
+      'uwwurrrrr',
+      'uwwrrrrrr',
+      'uwwrrrrrr',
+      'urwwwwrrr',
+      'rrrrrrrrr',
+    ],
+  },
+  {
+    name: 'iNice',
+    // ПЭТ 0,5 л: зелёный колпачок, прозрачное горло, чай, оранжевая этикетка с тёмной плашкой и лимонами
+    art: [
+      '..GGGGGG..',
+      '..GgGgGg..',
+      '..gggggg..',
+      '.cccccccc.',
+      '..cccccc..',
+      '..cccccc..',
+      '.cccccccc.',
+      'cccccccccc',
+      'tttttttttt',
+      'llllllllll',
+      'oDDDDDoLoo',
+      'oDwwwDoooo',
+      'oDDDDDLLoo',
+      'oLooolLLlo',
+      'oooLLoolLo',
+      'olLoooooLL',
+      'llllllllll',
+      'tttttttttt',
+      'tttttttttt',
+      'tttttttttt',
+      'tttttttttt',
+      'tttttttttt',
+      'TTTTTTTTTT',
+      '.TTTTTTTT.',
+    ],
+    colors: {
+      G: '#5ccc3c', g: '#2f8f2a', c: '#cfe3e6', t: '#c0601c', T: '#8a3a12',
+      o: '#f28c28', D: '#1f5a50', w: '#ffffff', L: '#f6d23a', l: '#8ccf3a',
+    },
+    sticker: [
+      'ooooooooo',
+      'oDDDDDDDo',
+      'oDwDwwwDo',
+      'oDDDDDDDo',
+      'ooooolloo',
+      'oooolLloo',
+      'oLLolLooo',
+      'oLLlLoooo',
+      'ooooooooo',
+    ],
+  },
+  {
+    name: 'Мохито',
+    // банка 0,5 л: светлая, с дольками лайма, красная надпись наискосок и чёрная плашка FRESH
+    art: [
+      ...canTop(10),
+      'wwlwwwwlLw',
+      'wlLlwwwwlw',
+      'wwlwwwlLww',
+      'wwwwwwrrxx',
+      'wwwwrrrrxx',
+      'wwwrrrrwww',
+      'wwrrrrwwww',
+      'wrrrrwwlww',
+      'rrrrwwlLlw',
+      'rrwwwlLLlw',
+      'wwwwwwlLww',
+      'wlwwwwwwww',
+      'lLlwwwwwlw',
+      'wlwwwwwlLl',
+      'wwwwlwwwlw',
+      'wwwlLlwwww',
+      'wwwwwwwwww',
+      ...canBottom(10),
+    ],
+    colors: { w: '#e8f3df', l: '#9bd655', L: '#3f9a3a', r: '#d8262c', x: '#22262e' },
+    sticker: [
+      'wwwwwwwww',
+      'wwwlllwww',
+      'wwlLLLlww',
+      'wlLlLlLlw',
+      'wlLLlLLlw',
+      'wlLlLlLlw',
+      'wwlLLLlww',
+      'wwwlllwww',
+      'rrrrrrrrr',
+    ],
+  },
+  {
+    name: 'Street',
+    // тонкая банка 0,33 л: диагональ жёлтый/зелёный, белая «S», синий значок с лимоном
+    art: [
+      ...canTop(8),
+      'yyyyyyyy',
+      'yyyyyyyg',
+      'yywwwwyg',
+      'ywwyyygg',
+      'ywwyyggg',
+      'yywwwggg',
+      'yyyywwgg',
+      'yyygwwgg',
+      'ywwwwggg',
+      'yygggggg',
+      'ygwwwwwg',
+      'yggggggg',
+      'gggggggg',
+      'gggggggg',
+      'gggbYYbg',
+      'gggbbbbg',
+      'gggggggg',
+      'gggggggg',
+      ...canBottom(8),
+    ],
+    colors: { y: '#f4d21e', g: '#2fa040', w: '#ffffff', b: '#2a5aa0', Y: '#fff070' },
+    sticker: [
+      'yyyyyyyyg',
+      'yywwwwygg',
+      'ywwyyyggg',
+      'ywwyygggg',
+      'yywwwgggg',
+      'yyygwwggg',
+      'yyggwwggg',
+      'ywwwwgggg',
+      'ggggggggg',
+    ],
+  },
+  {
+    name: 'Квас «Очаковский» 1,5 л',
+    // большая коричневая ПЭТ: красный колпачок, золотая этикетка с тем же «О»
+    art: [
+      '...rrrrrr...',
+      '...rRrRrR...',
+      '...RRRRRR...',
+      '...QQQQQQ...',
+      '....qqqq....',
+      '....qqqq....',
+      '...qqqqqq...',
+      '..qqqqqqqq..',
+      '.qqqqqqqqqq.',
+      'qqqqqqqqqqqq',
+      'qqqqqqqqqqqq',
+      'yyyyyyyyyyyy',
+      'yyyyrrrryyyy',
+      'yyyrrrrrryyy',
+      'yyrryyyyrryy',
+      'gggggggggggg',
+      'gwwgwwwgwwgg',
+      'gggggggggggg',
+      'yybbYYYYbbyy',
+      'yyybbbbbbyyy',
+      'yyyybbbbyyyy',
+      'yyyyyyyyyyyy',
+      'qqqqqqqqqqqq',
+      'qqqqqqqqqqqq',
+      'qqqqqqqqqqqq',
+      'qqqqqqqqqqqq',
+      'qqqqqqqqqqqq',
+      'qqqqqqqqqqqq',
+      '.qqqqqqqqqq.',
+    ],
+    colors: { ...KVASS, R: '#8f2222', q: '#7a3c16', Q: '#3a1c0c' },
+    // силуэт бутылки — чтобы не путать с банкой того же кваса
+    sticker: [
+      'wwwwwwwww',
+      'wwwrrrwww',
+      'wwwwqwwww',
+      'wwwqqqwww',
+      'wwqqqqqww',
+      'wwyrrryww',
+      'wwgggggww',
+      'wwqqqqqww',
+      'wwwwwwwww',
+    ],
+  },
+]
