@@ -100,7 +100,7 @@ export function LevelScreen({ chapter, levelIndex, onPlay, onLevels, onMap }: Pr
 
       {phase === 'play' && paused ? (
         <div className="overlay-c overlay-pause">
-          <div className="sheet sheet-pause">
+          <div className="sheet sheet-pixel sheet-pause">
             <h2>Пауза</h2>
             <div className="pause-actions">
               <button type="button" className="btn btn-ghost btn-icon btn-danger" onClick={onLevels} aria-label="Выйти к уровням">
@@ -124,7 +124,7 @@ export function LevelScreen({ chapter, levelIndex, onPlay, onLevels, onMap }: Pr
 
       {phase === 'result' && result ? (
         <div className="overlay-c">
-          <div className="sheet">
+          <div className="sheet sheet-pixel sheet-result">
             {result.mastered ? (
               <>
                 <span className="badge">

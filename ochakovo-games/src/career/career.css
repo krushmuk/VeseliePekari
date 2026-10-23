@@ -1068,12 +1068,16 @@
   background: rgba(255, 255, 255, 0.82);
 }
 
-/* Пауза в пиксельном стиле меню; цвета прежние */
-.career .overlay-pause {
-  background: rgba(10, 11, 12, 0.82);
+/* Пауза и итог уровня в пиксельном стиле меню; цвета прежние */
+.career .overlay-pause,
+.career .overlay-c:has(.sheet-result) {
+  background: rgba(10, 11, 12, 0.88);
+}
+.career .overlay-c:has(.sheet-result) {
+  align-items: center;
 }
 
-.career .sheet-pause {
+.career .sheet.sheet-pixel {
   --pixel: 'Press Start 2P', 'Courier New', monospace;
   --px: 4px;
   gap: 20px;
@@ -1086,19 +1090,20 @@
   width: calc(100% - 8px);
 }
 
-.career .sheet-pause,
-.career .sheet-pause * {
+.career .sheet.sheet-pixel,
+.career .sheet.sheet-pixel * {
   border-radius: 0 !important;
 }
 
-.career .sheet-pause h2 {
+.career .sheet.sheet-pixel h2 {
+  line-height: 1.4;
   font-family: var(--pixel);
   font-size: 18px;
   font-weight: 400;
   text-shadow: 3px 3px 0 #CD004B;
 }
 
-.career .sheet-pause .btn {
+.career .sheet.sheet-pixel .btn {
   min-height: 56px;
   border: var(--px) solid #000;
   font-family: var(--pixel);
@@ -1107,31 +1112,102 @@
   transition: none;
 }
 
-.career .sheet-pause .btn:active {
+.career .sheet.sheet-pixel .btn:active {
   transform: translate(4px, 4px);
   box-shadow: none;
 }
 
-.career .sheet-pause .btn-primary {
+.career .sheet.sheet-pixel .btn-primary {
   background: #a6f05c;
   color: #12200a;
   box-shadow: inset -4px -4px 0 rgba(0, 0, 0, 0.25), inset 4px 4px 0 rgba(255, 255, 255, 0.35), 4px 4px 0 #000;
 }
 
-.career .sheet-pause .btn-ghost {
+.career .sheet.sheet-pixel .btn-ghost {
   background: #404346;
   color: #F1F2F3;
   border-color: #F1F2F3;
   box-shadow: 4px 4px 0 #000;
 }
 
-.career .sheet-pause .btn-danger {
+.career .sheet.sheet-pixel .btn-danger {
   color: #ff3d7f;
   border-color: #ff3d7f;
 }
 
-.career .sheet-pause svg {
+.career .sheet.sheet-pixel svg {
   shape-rendering: crispEdges;
+}
+
+.career .sheet.sheet-pixel .sheet-kicker {
+  font-family: var(--pixel);
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: #ff3d7f;
+}
+
+.career .sheet.sheet-pixel p {
+  font-family: var(--pixel);
+  font-size: 10px;
+  line-height: 1.8;
+  color: #A2AAAD;
+}
+
+.career .sheet.sheet-pixel .stars .on {
+  color: #a6f05c;
+  filter: drop-shadow(2px 2px 0 #000);
+}
+
+.career .sheet.sheet-pixel .stars .off {
+  color: rgba(255, 255, 255, 0.18);
+}
+
+.career .sheet.sheet-pixel .badge {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  border: var(--px) solid #000;
+  background: #a6f05c;
+  color: #12200a;
+  box-shadow: inset -4px -4px 0 rgba(0, 0, 0, 0.25), inset 4px 4px 0 rgba(255, 255, 255, 0.35), 4px 4px 0 #000;
+  position: relative;
+}
+
+.career .sheet.sheet-pixel .badge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0 2px, transparent 2px 4px);
+}
+
+.career .sheet.sheet-pixel .facts li {
+  padding: 10px 12px;
+  border: 3px solid #F1F2F3;
+  background: #404346;
+  color: #F1F2F3;
+  font-family: var(--pixel);
+  font-size: 9px;
+  line-height: 1.7;
+}
+
+.career .sheet.sheet-pixel .btn-link {
+  min-height: 44px;
+  border: none;
+  background: none;
+  box-shadow: none;
+  color: #A2AAAD;
+  font-size: 10px;
+}
+
+.career .sheet.sheet-pixel .btn-link:active {
+  transform: none;
+}
+
+.career .sheet.sheet-pixel .btn-link:hover {
+  color: #a6f05c;
 }
 
 .career .sheet > .mentor-avatar,
