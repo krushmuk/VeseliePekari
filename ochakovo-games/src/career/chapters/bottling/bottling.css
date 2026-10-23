@@ -56,3 +56,70 @@
 .bottling-hud .stat.low .value {
   color: #CD004B;
 }
+
+/* Вступительный монолог: персонаж-заглушка слева внизу, над ним пузырёк с репликой; нажатие листает */
+.bottling-intro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 0 16px calc(var(--safe-bottom, 0px) + 24px);
+  background: rgba(35, 54, 59, 0.6);
+  cursor: pointer;
+}
+
+.bottling-intro-char {
+  width: 180px;
+  height: 260px;
+  margin-left: 8px;
+  border-radius: 16px;
+  background: rgba(241, 242, 243, 0.25);
+}
+
+.bottling-intro-bubble {
+  position: relative;
+  max-width: min(420px, 92%);
+  margin-bottom: 18px;
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: var(--card, #F1F2F3);
+  color: var(--ink, #2B2D2F);
+  animation: intro-pop 0.18s ease-out;
+}
+
+/* Хвостик пузырька к персонажу */
+.bottling-intro-bubble::after {
+  content: '';
+  position: absolute;
+  left: 70px;
+  bottom: -10px;
+  border: 10px solid transparent;
+  border-top-color: var(--card, #F1F2F3);
+  border-bottom: 0;
+}
+
+.bottling-intro-bubble small {
+  font-size: 15px;
+  font-weight: 700;
+  opacity: 0.65;
+}
+
+.bottling-intro-bubble p {
+  margin: 4px 0 10px;
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+.bottling-intro-hint {
+  font-size: 14px;
+  opacity: 0.55;
+}
+
+@keyframes intro-pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+}

@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
 import { sfx } from '../../../games/shared/sfx'
 import { platform } from '../../../platform'
-import { BELT, BG, BIN, BOTTLE, BOX, BOX_POINTS, DRAG, FIELD, FILLER, LEVEL, MISS_X, SPAWN_X, TIMING } from './config'
+import { BELT, BG, BIN, BOTTLE, BOX, BOX_POINTS, DRAG, FIELD, FILLER, LEVEL, MISS_X, RAMP, SPAWN_X, TIMING } from './config'
 import { boxScore, boxType, canPut, emptyBox, isComplete, isJammed, put, take, wantedTypes, type BoxState } from './rules'
 import { Spawner } from './spawner'
 import { createSprites, TEX } from './sprites'
@@ -89,6 +89,7 @@ export class BottlingScene extends Phaser.Scene {
   private selectGfx!: Phaser.GameObjects.Graphics
   private beltShift = 0
   private spawnIn = 0
+  private elapsed = 0
 
   private score = 0
   private misses = 0
@@ -103,7 +104,7 @@ export class BottlingScene extends Phaser.Scene {
   init(data: { bridge: BottlingBridge }) {
     this.bridge = data.bridge
     this.running = true
-    this.spawner = new Spawner(LEVEL.types, LEVEL.capacity, LEVEL.assist)
+    this.spawner = new Spawner(LEVEL.types, LEVEL.capacity, LEVEL.assist, LEVEL.startTypes, LEVEL.newTypeEvery)
     this.bottles = []
     this.boxes = []
     this.press = null
@@ -114,6 +115,7 @@ export class BottlingScene extends Phaser.Scene {
     this.misses = 0
     this.boxesDone = 0
     this.timeLeft = LEVEL.shift
+    this.elapsed = 0
     this.lastHud = ''
   }
 
@@ -179,11 +181,14 @@ export class BottlingScene extends Phaser.Scene {
       return
     }
 
-    this.beltShift += LEVEL.speed * dt
+    // Начало смены медленнее: лента и бутылки плавно разгоняются до обычного темпа
+    this.elapsed += dt
+    const pace = RAMP.from + (1 - RAMP.from) * Math.min(1, this.elapsed / RAMP.time)
+    this.beltShift += LEVEL.speed * pace * dt
     const shift = Math.round(this.beltShift)
     this.beltTop.tilePositionX = -shift
 
-    this.spawnIn -= dt
+    this.spawnIn -= dt * pace
     if (this.spawnIn <= 0) {
       this.spawnIn += LEVEL.interval
       this.spawn()

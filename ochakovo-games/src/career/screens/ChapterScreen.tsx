@@ -1,13 +1,11 @@
-import { useState, type CSSProperties } from 'react'
+import { useRef, useState, type CSSProperties } from 'react'
 import { platform, useBack } from '../../platform'
-import { CHAPTERS, type ChapterInfo } from '../chapters'
-import { ChapterIcon, LockIcon, StarIcon, Stars } from '../icons'
+import type { ChapterInfo } from '../chapters'
+import { LockIcon, StarIcon, Stars } from '../icons'
 import {
   chapterStars,
-  isIntroSeen,
   isLevelOpen,
   levelStars,
-  markIntroSeen,
   maxStars,
   useProgress,
 } from '../progress'
@@ -19,25 +17,28 @@ interface Props {
   onPlay: (levelIndex: number) => void
 }
 
-/** Глава: наставник и список уровней. При первом входе — вступление о профессии */
+const LEAVE_MS = 180
+
+/** Глава: шапка и список уровней */
 export function ChapterScreen({ chapter, onBack, onPlay }: Props) {
   const progress = useProgress()
-  const [intro, setIntro] = useState(() => !isIntroSeen(progress, chapter.id))
-  const closeIntro = () => {
-    markIntroSeen(chapter.id)
-    setIntro(false)
+  const [leaving, setLeaving] = useState(false)
+  const timer = useRef(0)
+  // Выход: сначала проигрывается анимация, потом экран закрывается
+  const leave = () => {
+    if (timer.current) return
+    setLeaving(true)
+    timer.current = window.setTimeout(onBack, LEAVE_MS)
   }
-  useBack(intro ? closeIntro : onBack)
+  useBack(leave)
 
-  const number = CHAPTERS.indexOf(chapter) + 1
   const last = chapter.levels.length - 1
 
   return (
-    <div className="screen" style={{ '--c': chapter.color } as CSSProperties}>
+    <div className={`screen chapter-screen${leaving ? ' leaving' : ''}`} style={{ '--c': chapter.color } as CSSProperties}>
       <TopBar
-        subtitle={`Глава ${number}`}
         title={chapter.title}
-        onBack={onBack}
+        onBack={leave}
         backLabel="К карте"
         right={
           <span className="pill">
@@ -46,20 +47,8 @@ export function ChapterScreen({ chapter, onBack, onPlay }: Props) {
         }
       />
 
-      <section className="mentor">
-        <span className="mentor-avatar">
-          <ChapterIcon name={chapter.icon} size={34} />
-        </span>
-        <div>
-          <b>{chapter.tagline}</b>
-          <p>
-            Наставник: {chapter.mentor.name}, {chapter.mentor.role}
-          </p>
-        </div>
-        <button type="button" className="btn btn-small btn-ghost" onClick={() => setIntro(true)}>
-          О профессии
-        </button>
-      </section>
+      {/* Место под картинку главы */}
+      <div className="chapter-art" aria-hidden="true" />
 
       <ol className="levels">
         {chapter.levels.map((level, k) => {
@@ -67,7 +56,7 @@ export function ChapterScreen({ chapter, onBack, onPlay }: Props) {
           const stars = levelStars(progress, chapter.id, k)
           const exam = k === last
           return (
-            <li key={k} className={exam ? 'exam' : undefined}>
+            <li key={k} className={exam ? 'exam' : undefined} style={{ '--i': k } as CSSProperties}>
               <button
                 type="button"
                 className={`level-tile${open ? '' : ' locked'}${stars ? ' passed' : ''}`}
@@ -85,51 +74,6 @@ export function ChapterScreen({ chapter, onBack, onPlay }: Props) {
           )
         })}
       </ol>
-
-      {intro ? <IntroOverlay chapter={chapter} onDone={closeIntro} /> : null}
-    </div>
-  )
-}
-
-function IntroOverlay({ chapter, onDone }: { chapter: ChapterInfo; onDone: () => void }) {
-  const [slide, setSlide] = useState(0)
-  const lastSlide = slide === chapter.intro.length - 1
-
-  return (
-    <div className="overlay-c" role="dialog" aria-modal="true" aria-label={`Вступление: ${chapter.title}`}>
-      <div className="sheet">
-        <div className="sheet-hero">
-          <span className="mentor-avatar big">
-            <ChapterIcon name={chapter.icon} size={52} />
-          </span>
-          <div>
-            <b>{chapter.mentor.name}</b>
-            <small>{chapter.mentor.role}</small>
-          </div>
-        </div>
-        <p className="speech">{chapter.intro[slide]}</p>
-        <div className="dots" aria-hidden="true">
-          {chapter.intro.map((_, k) => (
-            <span key={k} className={k === slide ? 'on' : undefined} />
-          ))}
-        </div>
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => {
-            platform.haptic('select')
-            if (lastSlide) onDone()
-            else setSlide(slide + 1)
-          }}
-        >
-          {lastSlide ? 'Начать' : 'Дальше'}
-        </button>
-        {!lastSlide ? (
-          <button type="button" className="btn btn-link" onClick={onDone}>
-            Пропустить
-          </button>
-        ) : null}
-      </div>
     </div>
   )
 }

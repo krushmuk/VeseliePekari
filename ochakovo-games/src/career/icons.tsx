@@ -29,7 +29,7 @@ const CHAPTER_ICONS: Record<ChapterIconName, ReactNode> = {
       <circle cx="17" cy="17.5" r="1.8" />
     </>
   ),
-  bottle: <path d="M10 2h4v4l2 3v12a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9l2-3zM8 13h8" />,
+  bottle: <path d="M10 2.5h4V6l2.2 3.2V20.5a1 1 0 0 1-1 1H8.8a1 1 0 0 1-1-1V9.2L10 6zM7.8 13h8.4M7.8 17h8.4" />,
   flask: <path d="M9 2h6M10 2v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 8V2M7 15h10" />,
   lens: (
     <>

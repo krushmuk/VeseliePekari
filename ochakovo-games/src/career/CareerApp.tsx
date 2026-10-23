@@ -3,6 +3,8 @@ import { CHAPTERS } from './chapters'
 import { ChapterScreen } from './screens/ChapterScreen'
 import { LevelScreen } from './screens/LevelScreen'
 import { MapScreen } from './screens/MapScreen'
+import { PrologueScreen } from './screens/PrologueScreen'
+import { isPrologueDone, markPrologueDone, useProgress } from './progress'
 import './career.css'
 
 type Screen =
@@ -17,6 +19,7 @@ interface Props {
 
 /** Оболочка игры «Профессии»: карта глав → глава → уровень */
 export default function CareerApp({ onExit }: Props) {
+  const progress = useProgress()
   const [screen, setScreen] = useState<Screen>({ name: 'map' })
   const chapter = 'chapterId' in screen ? CHAPTERS.find(c => c.id === screen.chapterId) : undefined
 
@@ -25,6 +28,15 @@ export default function CareerApp({ onExit }: Props) {
   // run меняется при каждом запуске — «Ещё раз» пересоздаёт уровень с нуля
   const toLevel = (chapterId: string, levelIndex: number) =>
     setScreen({ name: 'level', chapterId, levelIndex, run: Date.now() })
+
+  // Пока вступительная миссия не пройдена, карта глав недоступна
+  if (!isPrologueDone(progress)) {
+    return (
+      <div className="career">
+        <PrologueScreen onDone={markPrologueDone} onExit={onExit} />
+      </div>
+    )
+  }
 
   return (
     <div className="career">
