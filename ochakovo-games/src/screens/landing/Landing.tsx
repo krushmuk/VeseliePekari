@@ -388,13 +388,24 @@ export function Landing({ onPlay, scrollTo }: Props) {
             <form id="apply" className="form" onSubmit={onSubmit}>
               <h3>Не любишь звонить?</h3>
               <p>Оставь контакт — HR напишет сам и расскажет про вакансии. Без анкет на пять страниц.</p>
-              <div className="age-note">
-                <b>18+</b>
-                <span>Принимаем на работу только совершеннолетних</span>
-              </div>
               <div className="field">
                 <label htmlFor="e-name">Как тебя зовут</label>
                 <input id="e-name" name="name" autoComplete="given-name" required />
+              </div>
+              <div className="field">
+                <label htmlFor="e-age">Сколько тебе лет</label>
+                <input
+                  id="e-age"
+                  name="age"
+                  type="number"
+                  inputMode="numeric"
+                  min={18}
+                  max={99}
+                  placeholder="От 18 лет"
+                  required
+                  onInvalid={e => e.currentTarget.setCustomValidity(e.currentTarget.validity.valueMissing ? 'Укажи свой возраст' : 'Принимаем на работу только с 18 лет')}
+                  onInput={e => e.currentTarget.setCustomValidity('')}
+                />
               </div>
               <div className="field">
                 <label htmlFor="e-contact">Телефон или Telegram</label>
