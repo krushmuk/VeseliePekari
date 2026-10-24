@@ -4,7 +4,7 @@ import { localStore } from '../platform/web'
 import { CHAPTERS, type ChapterInfo } from './chapters'
 
 // Прогресс игрока. Сохранение компактное (в Telegram CloudStorage до 4 КБ на ключ):
-// { v: версия, s: { главa: [звёзды по уровням] }, i: [главы, где вступление уже показано] }
+// { v: версия, s: { главa: [звёзды по уровням] }, i: [главы, где вступление уже показано], e: { слот: надетый элемент } }
 
 const KEY = 'progress'
 const VERSION = 1
@@ -13,13 +13,19 @@ interface Save {
   v: number
   s: Record<string, number[]>
   i: string[]
+  /** Надетые элементы кастомизации маскота по слотам; нет записи — стандартный */
+  e?: Record<string, string>
+  /** Потрачено звёзд: баланс = заработанные − потраченные, а прогресс считается по заработанным */
+  p?: number
+  /** Купленные элементы кастомизации */
+  o?: string[]
 }
 
 let save: Save = { v: VERSION, s: {}, i: [] }
 const listeners = new Set<() => void>()
 
 /** ?unlock в адресе открывает все главы и уровни — для проверки */
-const unlockAll = new URLSearchParams(location.search).has('unlock')
+export const unlockAll = new URLSearchParams(location.search).has('unlock')
 
 function parse(raw: string | null): Save | null {
   if (!raw) return null
@@ -27,7 +33,7 @@ function parse(raw: string | null): Save | null {
     const data = JSON.parse(raw) as Save
     // Здесь будут миграции старых версий сохранения
     if (data.v !== VERSION || typeof data.s !== 'object') return null
-    return { v: VERSION, s: data.s ?? {}, i: Array.isArray(data.i) ? data.i : [] }
+    return { v: VERSION, s: data.s ?? {}, i: Array.isArray(data.i) ? data.i : [], e: data.e ?? {}, p: Math.max(0, Number(data.p) || 0), o: Array.isArray(data.o) ? data.o : [] }
   } catch {
     return null
   }
@@ -41,7 +47,7 @@ function merge(a: Save, b: Save): Save {
     const len = Math.max(cur.length, stars.length)
     s[id] = Array.from({ length: len }, (_, k) => Math.max(cur[k] ?? 0, stars[k] ?? 0))
   }
-  return { v: VERSION, s, i: [...new Set([...a.i, ...b.i])] }
+  return { v: VERSION, s, i: [...new Set([...a.i, ...b.i])], e: { ...b.e, ...a.e }, p: Math.max(a.p ?? 0, b.p ?? 0), o: [...new Set([...(a.o ?? []), ...(b.o ?? [])])] }
 }
 
 /**
@@ -82,6 +88,16 @@ export const chapterStars = (p: Save, chapter: ChapterInfo) =>
 
 export const totalStars = (p: Save) => CHAPTERS.reduce((sum, c) => sum + chapterStars(p, c), 0)
 
+/** Звёзды на балансе: заработанные минус потраченные */
+export const starBalance = (p: Save) => Math.max(0, totalStars(p) - (p.p ?? 0))
+
+/** Потратить звёзды; false — не хватает на балансе */
+export function spendStars(amount: number) {
+  if (amount <= 0 || amount > starBalance(save)) return false
+  commit({ ...save, p: (save.p ?? 0) + amount })
+  return true
+}
+
 export const maxStars = (chapter: ChapterInfo) => chapter.levels.length * 3
 
 /** Глава освоена — экзамен (последний уровень) пройден */
@@ -116,6 +132,19 @@ export function recordResult(chapterId: string, index: number, stars: number) {
 export function markIntroSeen(chapterId: string) {
   if (save.i.includes(chapterId)) return
   commit({ ...save, i: [...save.i, chapterId] })
+}
+
+/** Купить элемент кастомизации за звёзды; false — уже куплен или не хватает на балансе */
+export function buyItem(itemId: string, cost: number) {
+  if (save.o?.includes(itemId) || cost > starBalance(save)) return false
+  commit({ ...save, o: [...(save.o ?? []), itemId], p: (save.p ?? 0) + cost })
+  return true
+}
+
+/** Надеть элемент кастомизации в слот */
+export function equip(slot: string, itemId: string) {
+  if (save.e?.[slot] === itemId) return
+  commit({ ...save, e: { ...save.e, [slot]: itemId } })
 }
 
 export const markPrologueDone = () => markIntroSeen(PROLOGUE)

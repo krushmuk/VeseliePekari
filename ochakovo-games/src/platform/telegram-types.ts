@@ -37,6 +37,7 @@ export interface TgWebApp {
   CloudStorage: TgCloudStorage
   isVersionAtLeast(version: string): boolean
   ready(): void
+  openTelegramLink(url: string): void
   expand(): void
   close(): void
   disableVerticalSwipes?(): void

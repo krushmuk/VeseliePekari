@@ -3,12 +3,14 @@ import { CHAPTERS } from './chapters'
 import { ChapterScreen } from './screens/ChapterScreen'
 import { LevelScreen } from './screens/LevelScreen'
 import { MapScreen } from './screens/MapScreen'
+import { ProfileScreen } from './screens/ProfileScreen'
 import { PrologueScreen } from './screens/PrologueScreen'
 import { isPrologueDone, markPrologueDone, useProgress } from './progress'
 import './career.css'
 
 type Screen =
   | { name: 'map' }
+  | { name: 'profile' }
   | { name: 'chapter'; chapterId: string }
   | { name: 'level'; chapterId: string; levelIndex: number; run: number }
 
@@ -51,8 +53,10 @@ export default function CareerApp({ onExit }: Props) {
 
   return (
     <div className="career">
-      {screen.name === 'map' || !chapter ? (
-        <MapScreen onOpen={toChapter} onExit={onExit} />
+      {screen.name === 'profile' ? (
+        <ProfileScreen onBack={toMap} />
+      ) : screen.name === 'map' || !chapter ? (
+        <MapScreen onOpen={toChapter} onProfile={() => setScreen({ name: 'profile' })} onExit={onExit} />
       ) : screen.name === 'chapter' ? (
         <ChapterScreen chapter={chapter} onBack={toMap} onPlay={k => toLevel(chapter.id, k)} />
       ) : (

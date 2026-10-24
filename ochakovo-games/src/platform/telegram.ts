@@ -1,6 +1,6 @@
 import type { TgWebApp } from './telegram-types'
 import type { Platform } from './types'
-import { localStore, onDocumentHidden } from './web'
+import { localStore, onDocumentHidden, webShare } from './web'
 
 /** Цвет шапки и фона Telegram под фон игры (см. --app-bg в career.css) */
 const APP_BG = '#2B2D2F'
@@ -109,6 +109,11 @@ export function createTelegramPlatform(tg: TgWebApp): Platform {
         tg.offEvent('activated', on)
         tg.offEvent('deactivated', offEv)
       }
+    },
+    share: async (text, url) => {
+      if (!at('6.1')) return webShare(text, url)
+      tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`)
+      return 'shared'
     },
     user: user ? { id: String(user.id), name: user.first_name } : null,
     startParam: tg.initDataUnsafe.start_param ?? null,

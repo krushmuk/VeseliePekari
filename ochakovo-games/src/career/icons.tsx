@@ -63,6 +63,22 @@ export const LockIcon = ({ size }: { size?: number }) => (
   </Svg>
 )
 
+export const ProfileIcon = ({ size }: { size?: number }) => (
+  <Svg size={size}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+  </Svg>
+)
+
+export const ShareIcon = ({ size }: { size?: number }) => (
+  <Svg size={size}>
+    <circle cx="6" cy="12" r="2.6" />
+    <circle cx="18" cy="5.5" r="2.6" />
+    <circle cx="18" cy="18.5" r="2.6" />
+    <path d="M8.3 10.8 15.7 6.7M8.3 13.2l7.4 4.1" />
+  </Svg>
+)
+
 export const BackIcon = ({ size }: { size?: number }) => (
   <Svg size={size}>
     <path d="M15 5l-7 7 7 7" />

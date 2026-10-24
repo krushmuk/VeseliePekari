@@ -51,6 +51,13 @@ class Sfx {
     o.stop(t + dur)
   }
 
+  /** Покупка: монетка «дзынь» — две высокие ноты подряд и звон на хвосте */
+  purchase() {
+    this.tone(988, 0.08, 'square', 0.06)
+    this.tone(1319, 0.3, 'square', 0.06, 0.08)
+    this.tone(2637, 0.25, 'triangle', 0.03, 0.08)
+  }
+
   toggleMute() {
     this.muted = !this.muted
     if (this.muted) this.setEngine(0, false)

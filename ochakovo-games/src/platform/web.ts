@@ -34,6 +34,20 @@ export function onDocumentHidden(cb: (hidden: boolean) => void) {
   return () => document.removeEventListener('visibilitychange', handler)
 }
 
+/** Системное окно «Поделиться», если есть; иначе копируем текст со ссылкой в буфер обмена */
+export async function webShare(text: string, url: string): Promise<'shared' | 'copied' | 'failed'> {
+  try {
+    if (navigator.share) {
+      await navigator.share({ text, url })
+      return 'shared'
+    }
+    await navigator.clipboard.writeText(`${text} ${url}`)
+    return 'copied'
+  } catch {
+    return 'failed' // закрыли окно или нет доступа к буферу
+  }
+}
+
 export function createWebPlatform(): Platform {
   return {
     name: 'web',
@@ -45,6 +59,7 @@ export function createWebPlatform(): Platform {
     nativeBack: false,
     setBack: () => {},
     onSuspend: onDocumentHidden,
+    share: webShare,
     user: null,
     startParam: new URLSearchParams(location.search).get('startapp'),
   }

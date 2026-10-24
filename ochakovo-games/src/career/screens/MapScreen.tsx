@@ -1,28 +1,26 @@
 import type { CSSProperties } from 'react'
 import { platform, useBack } from '../../platform'
 import { CHAPTERS } from '../chapters'
-import { ChapterIcon, CheckIcon, LockIcon, StarIcon } from '../icons'
+import { ChapterIcon, CheckIcon, LockIcon, ProfileIcon, StarIcon } from '../icons'
 import {
   chapterStars,
   isChapterDone,
   isChapterOpen,
   maxStars,
-  totalStars,
   useProgress,
 } from '../progress'
 import { TopBar } from './TopBar'
 
 interface Props {
   onOpen: (chapterId: string) => void
+  onProfile: () => void
   onExit?: () => void
 }
 
 /** Выбор профессии: обычный список глав, следующая открывается после экзамена */
-export function MapScreen({ onOpen, onExit }: Props) {
+export function MapScreen({ onOpen, onProfile, onExit }: Props) {
   const progress = useProgress()
   useBack(onExit ?? null)
-
-  const total = CHAPTERS.reduce((sum, c) => sum + maxStars(c), 0)
 
   return (
     <div className="screen map-screen">
@@ -32,9 +30,17 @@ export function MapScreen({ onOpen, onExit }: Props) {
         onBack={onExit}
         backLabel="На сайт"
         right={
-          <span className="pill" aria-label={`Звёзд: ${totalStars(progress)} из ${total}`}>
-            <StarIcon size={16} /> {totalStars(progress)}/{total}
-          </span>
+          <button
+            type="button"
+            className="icon-btn profile-btn"
+            onClick={() => {
+              platform.haptic('tap')
+              onProfile()
+            }}
+            aria-label="Профиль"
+          >
+            <ProfileIcon size={26} />
+          </button>
         }
       />
       {platform.user ? <p className="greeting">Привет, {platform.user.name}!</p> : null}
@@ -80,6 +86,7 @@ export function MapScreen({ onOpen, onExit }: Props) {
           })}
         </ol>
       </div>
+
     </div>
   )
 }
