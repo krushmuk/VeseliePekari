@@ -66,7 +66,7 @@ export const CHAPTERS: ChapterInfo[] = [
     levels: [
       { title: 'Запуск линии', goal: 'Разложи бутылки по коробкам' },
       { title: 'Брак', goal: 'Убирай бракованные бутылки в отдельный ящик' },
-      { title: 'TBA', goal: 'Скоро' },
+      { title: 'Пресс', goal: 'Сортируй банки по секциям пресса' },
       { title: 'TBA', goal: 'Скоро' },
       { title: 'TBA', goal: 'Скоро' },
       { title: 'TBA', goal: 'Скоро' },

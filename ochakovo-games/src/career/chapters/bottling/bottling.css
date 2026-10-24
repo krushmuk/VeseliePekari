@@ -156,3 +156,63 @@
     transform: translateY(8px);
   }
 }
+
+/* Уровень «Пресс»: три показателя вместо четырёх */
+.bottling-hud.hud-3 {
+  grid-template-columns: 44px repeat(3, 1fr);
+}
+
+/* Старая локация (цех) до переезда к прессу: за диалогом виден цех, затемнён слабее обычного */
+.bottling-intro.press-shop {
+  background: rgba(35, 54, 59, 0.25);
+}
+
+/* Реплика мастера пресса после ошибки: сверху под показателями, касания пропускает */
+.press-reply {
+  position: absolute;
+  top: calc(var(--safe-top, 0px) + 76px);
+  left: 16px;
+  right: 16px;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 12px 14px;
+  border: 4px solid #F1F2F3;
+  background: #35383B;
+  color: #F1F2F3;
+  box-shadow: 6px 6px 0 #CD004B;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  pointer-events: none;
+  animation: intro-pop 0.18s steps(3, end);
+}
+
+.press-reply small {
+  display: block;
+  font-size: 9px;
+  color: #ff3d7f;
+  text-transform: uppercase;
+}
+
+.press-reply p {
+  margin: 8px 0 0;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* Затемнение при переезде в другую локацию */
+.press-fade {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  animation: press-fade 0.7s linear both;
+  pointer-events: auto;
+}
+
+@keyframes press-fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}

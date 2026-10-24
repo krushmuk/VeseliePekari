@@ -7,6 +7,8 @@ import { platform } from '../../../platform'
 import { PauseIcon } from '../../icons'
 import { BottlingScene, type BottlingBridge, type HudState, type ShiftResult } from './BottlingScene'
 import { levelConfig, LEVELS, PERFECT_MISSES, type LevelConfig } from './config'
+import PressLevel from './press/PressLevel'
+import { PRESS_LEVEL } from './press/config'
 import './bottling.css'
 
 /** Вступительные монологи уровней — dialogs/глава-1-уровень-N.txt, по одной реплике на нажатие */
@@ -20,11 +22,16 @@ function starsFor({ score, misses, failed }: ShiftResult, level: LevelConfig) {
   return score >= good ? 2 : 1
 }
 
+/** Уровни главы 1: третий играется на прессе, остальные — на конвейере */
+export default function BottlingLevels(props: LevelProps) {
+  return props.levelIndex === PRESS_LEVEL ? <PressLevel {...props} /> : <ConveyorLevels {...props} />
+}
+
 /**
  * Уровни главы «Сортировка на конвейере». Этап 1 — серый прототип:
  * параметры уровней — LEVELS в config.ts, уровни после последнего играют его набор.
  */
-export default function BottlingLevels({ levelIndex, paused, onFinish, onPause }: LevelProps) {
+function ConveyorLevels({ levelIndex, paused, onFinish, onPause }: LevelProps) {
   const level = levelConfig(levelIndex)
   const INTRO = (levelIndex < INTROS.length && INTROS[levelIndex]) || []
   const [hud, setHud] = useState<HudState>({ score: 0, time: level.shift, misses: 0, boxes: 0 })
