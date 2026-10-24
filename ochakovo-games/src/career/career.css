@@ -2045,6 +2045,7 @@
 .career .mascot-slot {
   display: grid;
   place-items: center;
+  flex: none;
   height: 260px;
   padding: 12px 0;
   border: var(--px) solid var(--on-bg);
@@ -2089,22 +2090,13 @@
   text-shadow: none;
 }
 
-.career .slot-list,
 .career .cosmetic-list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.career .slot-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 0 4px 4px 0;
-}
-
-.career .slot-head {
-  width: 100%;
+.career .slot-picker {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2113,41 +2105,30 @@
   border: var(--px) solid var(--on-bg);
   background: var(--surface-2);
   box-shadow: 4px 4px 0 #000;
-  text-align: left;
   font-family: var(--pixel);
 }
 
-.career .slot-head:active {
-  transform: translate(4px, 4px);
-  box-shadow: none;
+.career .slot-picker .icon-btn {
+  flex: none;
+}
+
+.career .slot-next svg {
+  transform: scaleX(-1);
 }
 
 .career .slot-text {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-
-.career .slot-text small {
-  color: var(--green);
-  font-size: 9px;
+  flex: 1;
+  text-align: center;
 }
 
 .career .slot-text b {
-  font-size: 11px;
+  color: var(--green);
+  font-size: 15px;
   font-weight: 400;
   line-height: 1.4;
-}
-
-/* Стрелка «назад» повёрнута: вниз — закрыто, вверх — открыто */
-.career .slot-arrow {
-  flex: none;
-  display: grid;
-  transform: rotate(-90deg);
-}
-
-.career .slot-head.open .slot-arrow {
-  transform: rotate(90deg);
 }
 
 .career .cosmetic-list {
@@ -2303,4 +2284,42 @@
   font-size: 10px;
   line-height: 1.6;
   color: var(--green);
+}
+
+.career .preview-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  font-family: var(--pixel);
+  font-size: 10px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.career .preview-bar b {
+  font-weight: 400;
+  color: var(--green);
+}
+
+.career .preview-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.career .preview-actions .btn {
+  color: var(--on-bg);
+}
+
+.career .preview-actions .btn-primary {
+  color: var(--ink);
+}
+
+.career .preview-actions .btn:disabled {
+  opacity: 0.5;
+}
+
+.career .cosmetic.trying {
+  border-color: var(--cta);
 }

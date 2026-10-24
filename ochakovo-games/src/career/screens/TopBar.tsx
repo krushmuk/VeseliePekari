@@ -3,7 +3,7 @@ import { platform } from '../../platform'
 import { BackIcon } from '../icons'
 
 interface Props {
-  title: ReactNode
+  title?: ReactNode
   subtitle?: ReactNode
   /** Своя кнопка «назад» — только на сайте: в Telegram есть системная (см. useBack) */
   onBack?: () => void
@@ -21,7 +21,7 @@ export function TopBar({ title, subtitle, onBack, backLabel = 'Назад', righ
       ) : null}
       <div className="topbar-title">
         {subtitle ? <small>{subtitle}</small> : null}
-        <h1>{title}</h1>
+        {title ? <h1>{title}</h1> : null}
       </div>
       {right}
     </header>
