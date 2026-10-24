@@ -75,6 +75,12 @@ export function drawBackdrop(g: G) {
   rack(g)
 }
 
+/** Только стена и пол — стеллаж рисует сам уровень */
+export function drawRoom(g: G) {
+  wall(g)
+  floor(g)
+}
+
 /** Стена: бетонные блоки в шахматном порядке, швы потемнее, у блоков слегка разный тон, крапины и сколы */
 function wall(g: G) {
   const h = FLOOR_Y - AREA.y

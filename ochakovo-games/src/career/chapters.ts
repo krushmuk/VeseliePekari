@@ -81,7 +81,7 @@ export const CHAPTERS: ChapterInfo[] = [
     title: 'Лаборант',
     tagline: 'Проверить каждую партию перед отправкой',
     color: '#b48ce0',
-    icon: 'lens',
+    icon: 'flask',
     mechanic: 'Поиск отличий и проверка проб по признакам',
     mentor: { name: 'Анна', role: 'лаборант отдела контроля качества' },
     intro: [
@@ -95,7 +95,7 @@ export const CHAPTERS: ChapterInfo[] = [
     ],
     levels: [
       { title: 'Эталон', goal: 'Найди три стакана, как эталон: цвет, пузырьки и их скорость. 30 секунд, не больше двух ошибок' },
-      { title: 'Цвет', goal: 'Отбери пробы с неправильным цветом', soon: true },
+      { title: 'Скрещивание', goal: 'Выведи три сорта яблок: результат скрещивания — среднее родителей. Скрещиваний на заказ мало' },
       { title: 'Прозрачность', goal: 'Найди мутные пробы', soon: true },
       { title: 'Журнал', goal: 'Сверь результаты с нормами', soon: true },
       { title: 'Много проб', goal: 'Проверь большую партию за время', soon: true },
@@ -109,7 +109,7 @@ export const CHAPTERS: ChapterInfo[] = [
     title: 'Оператор тех цеха',
     tagline: 'Чтобы у напитка всегда был тот самый вкус',
     color: '#7bc67b',
-    icon: 'flask',
+    icon: 'gear',
     mechanic: 'Рецептура: смешать ингредиенты в пропорции, выдержать температуру и время',
     mentor: { name: 'Ольга', role: 'оператор технологического цеха' },
     intro: [
@@ -149,7 +149,7 @@ export const CHAPTERS: ChapterInfo[] = [
     ],
     levels: [
       { title: 'Тележка', goal: 'Собери три заказа по номерам, хрупкие коробки ставь сверху' },
-      { title: 'TBA', goal: 'Скоро', soon: true },
+      { title: 'Сверка', goal: 'Найди на стеллаже восемь пар коробок с одинаковыми кодами' },
       { title: 'TBA', goal: 'Скоро', soon: true },
       { title: 'TBA', goal: 'Скоро', soon: true },
       { title: 'TBA', goal: 'Скоро', soon: true },

@@ -6,6 +6,7 @@ import { loadDialog } from '../../dialogs'
 import { platform } from '../../../platform'
 import { PauseIcon } from '../../icons'
 import { KeeperPortrait } from '../../screens/StorageArt'
+import MemoryLevel from './MemoryLevel'
 import { PackScene, type PackBridge, type PackHud, type PackResult } from './PackScene'
 import { levelConfig } from './config'
 import '../bottling/bottling.css'
@@ -21,7 +22,7 @@ function starsFor({ mistakes, violations }: PackResult) {
 }
 
 /** Уровни главы «Склад»: собрать три заказа по очереди — уложить в сетку 4×4 над тележкой нужные коробки по номерам (коробок больше, чем в заказе; сетка может остаться не полной) и подтвердить, без времени */
-export default function WarehouseLevels({ levelIndex, paused, onFinish, onPause }: LevelProps) {
+function CartLevel({ levelIndex, paused, onFinish, onPause }: LevelProps) {
   const level = levelConfig(levelIndex)
   const intro = INTROS[Math.min(levelIndex, INTROS.length - 1)] ?? []
   const [hud, setHud] = useState<PackHud>({ ordered: 0, orderTotal: level.orders[0].length, canConfirm: false, moves: 0 })
@@ -120,4 +121,9 @@ export default function WarehouseLevels({ levelIndex, paused, onFinish, onPause 
       )}
     </div>
   )
+}
+
+/** Уровни главы «Склад»: «Тележка» и «Сверка» */
+export default function WarehouseLevels(props: LevelProps) {
+  return props.levelIndex === 1 ? <MemoryLevel {...props} /> : <CartLevel {...props} />
 }

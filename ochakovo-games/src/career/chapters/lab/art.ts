@@ -10,13 +10,13 @@ type G = Phaser.GameObjects.Graphics
 const AREA = { x: -300, w: FIELD.w + 600, bottom: 460 }
 
 /** Детерминированный «случайный» ряд: узор стола не должен меняться между запусками */
-const hash = (a: number, b: number) => {
+export const hash = (a: number, b: number) => {
   const n = Math.sin(a * 127.1 + b * 311.7) * 43758.5453
   return n - Math.floor(n)
 }
 
 /** Светлее (t > 0) или темнее (t < 0) на долю пути к белому / чёрному */
-const shade = (color: number, t: number) => {
+export const shade = (color: number, t: number) => {
   const to = t > 0 ? 255 : 0
   const ch = (shift: number) => {
     const v = (color >> shift) & 255
@@ -45,17 +45,37 @@ const FONT: Record<string, string> = {
   Л: '.## #.# #.# #.# #.#',
   О: '### #.# #.# #.# ###',
   Н: '#.# #.# ### #.# #.#',
+  Б: '### #.. ##. #.# ##.',
+  Г: '### #.. #.. #.. #..',
+  Д: '.#### .#..# .#..# .#..# #####',
+  Е: '### #.. ##. #.. ###',
+  И: '#..# #..# #.## ##.# #..#',
+  К: '#.# ##. #.. ##. #.#',
+  П: '### #.# #.# #.# #.#',
+  Р: '##. #.# ##. #.. #..',
+  С: '.## #.. #.. #.. .##',
+  В: '##. #.# ##. #.# ##.',
+  Ш: '#.# #.# #.# ### ###',
+  Ь: '#.. #.. ##. #.# ##.',
+  '!': '.#. .#. .#. ... .#.',
+  ',': '... ... ... .#. #..',
+  '.': '... ... ... ... .#.',
 }
 
-/** Ширина строки шрифта в пикселях: по 3 на букву и по 1 между ними */
-export const textWidth = (text: string) => text.length * 4 - 1
+/** Ширина буквы: у большинства 3, у И и Д шире */
+const glyphWidth = (ch: string) => (FONT[ch] ? FONT[ch].indexOf(' ') : 3)
 
-function drawText(g: G, text: string, x: number, y: number, color: number) {
+/** Ширина строки шрифта в пикселях: буквы и по 1 между ними */
+export const textWidth = (text: string) => [...text].reduce((w, ch) => w + glyphWidth(ch) + 1, -1)
+
+export function drawText(g: G, text: string, x: number, y: number, color: number) {
   g.fillStyle(color)
-  ;[...text].forEach((ch, n) => {
+  let px = x
+  for (const ch of text) {
     const rows = (FONT[ch] ?? '').split(' ')
-    rows.forEach((row, j) => [...row].forEach((c, i) => c === '#' && g.fillRect(x + n * 4 + i, y + j, 1, 1)))
-  })
+    rows.forEach((row, j) => [...row].forEach((c, i) => c === '#' && g.fillRect(px + i, y + j, 1, 1)))
+    px += glyphWidth(ch) + 1
+  }
 }
 
 // ---------- Стакан ----------
@@ -160,10 +180,15 @@ export function drawPlate(g: G, cx: number, top: number) {
 // ---------- Стена, полка и стол ----------
 
 /** Фон: заглушка стены, полка под эталоном и лабораторный стол. Выходит за поле — на других экранах видно продолжение */
-export function drawBackdrop(g: G, shelfY: number) {
+export function drawBackdrop(g: G, shelfY?: number) {
   wall(g)
+  if (shelfY !== undefined) shelf(g, shelfY)
+  table(g)
+}
 
-  // деревянная полка под подставкой эталона: только в центре, на двух кронштейнах, с тенью на стене
+/** Деревянная полка под подставкой эталона */
+function shelf(g: G, shelfY: number) {
+  // только в центре, на двух кронштейнах, с тенью на стене
   const sw = 84
   const sx = FIELD.w / 2 - sw / 2
   g.fillStyle(0x6f8590, 0.35)
@@ -184,8 +209,6 @@ export function drawBackdrop(g: G, shelfY: number) {
   g.fillRect(sx + sw - 1, shelfY, 1, 5)
   g.fillStyle(0x5a3517, 0.45)
   for (let i = 0; i < 6; i++) g.fillRect(sx + 4 + Math.floor(hash(i, 5) * (sw - 18)), shelfY + 1 + (i % 2) * 2, 4 + (i % 3) * 2, 1)
-
-  table(g)
 }
 
 /** Тени у стены над столешницей */

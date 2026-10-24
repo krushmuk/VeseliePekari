@@ -8,6 +8,8 @@ import { PauseIcon } from '../../icons'
 import { SampleScene, type SampleBridge, type SampleHud } from './SampleScene'
 import { MAX_ERRORS, TIME_LIMIT } from './config'
 import { RIGHT, starsFor } from './rules'
+import CrossLevel from './CrossLevel'
+import { LabPortrait } from './LabPortrait'
 import '../bottling/bottling.css'
 import './lab.css'
 
@@ -16,7 +18,7 @@ const INTROS = [loadDialog('лаб-уровень-1')]
 const REPLY_MS = 3500
 
 /** Уровни главы «Лаборатория». Первый — «Эталон»: найти среди двенадцати стаканов (часть закрыта этикетками) три, совпадающих с эталоном по цвету, пузырькам и их скорости, за 30 секунд и не больше двух ошибок */
-export default function LabLevels({ levelIndex, paused, onFinish, onPause }: LevelProps) {
+function EtalonLevel({ levelIndex, paused, onFinish, onPause }: LevelProps) {
   const intro = INTROS[Math.min(levelIndex, INTROS.length - 1)] ?? []
   const [hud, setHud] = useState<SampleHud>({ found: 0, errors: 0, timeLeft: TIME_LIMIT })
   const [talking, setTalking] = useState(intro.length > 0)
@@ -106,10 +108,15 @@ export default function LabLevels({ levelIndex, paused, onFinish, onPause }: Lev
             </span>
           </div>
           <div className="bottling-intro-char" aria-label={intro[part].who}>
-            <div className="lab-portrait">А</div>
+            <LabPortrait />
           </div>
         </div>
       )}
     </div>
   )
+}
+
+/** Уровни главы «Лаборатория»: 1 — «Эталон», 2 — «Скрещивание» */
+export default function LabLevels(props: LevelProps) {
+  return props.levelIndex === 1 ? <CrossLevel {...props} /> : <EtalonLevel {...props} />
 }

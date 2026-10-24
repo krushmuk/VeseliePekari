@@ -12,6 +12,11 @@
   opacity: 0.5;
 }
 
+/* Уровень «Сверка»: пауза и три показателя */
+.bottling-hud.hud-memory {
+  grid-template-columns: 44px repeat(3, 1fr);
+}
+
 /* «Подтвердить» — внизу по центру, фиксирует раскладку */
 .warehouse-confirm {
   position: absolute;
