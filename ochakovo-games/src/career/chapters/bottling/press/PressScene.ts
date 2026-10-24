@@ -75,6 +75,8 @@ export class PressScene extends Phaser.Scene {
   private bridge!: PressBridge
   private cfg: PressConfig = PRESS_CONFIG
   private running = false
+  /** Ждём первого нажатия на секцию: пока горит подсказка, время не идёт и банки не появляются */
+  private waiting = true
 
   private cans: Can[] = []
   /** Куда сейчас смотрит заслонка: номер секции */
@@ -102,6 +104,7 @@ export class PressScene extends Phaser.Scene {
     this.bridge = data.bridge
     this.cfg = PRESS_CONFIG
     this.running = true
+    this.waiting = true
     this.cans = []
     this.flap = 1
     this.labels = []
@@ -132,7 +135,6 @@ export class PressScene extends Phaser.Scene {
       .setOrigin(0.5, 0)
       .setResolution(4)
       .setDepth(6)
-    this.time.delayedCall(9000, () => this.hideHint())
 
     this.fit()
     this.scale.on('resize', this.fit, this)
@@ -405,7 +407,7 @@ export class PressScene extends Phaser.Scene {
   // ---------- Ход игры ----------
 
   update(_time: number, deltaMs: number) {
-    if (!this.running) return
+    if (!this.running || this.waiting) return
     const dt = Math.min(0.1, deltaMs / 1000)
 
     this.timeLeft -= dt
@@ -525,10 +527,11 @@ export class PressScene extends Phaser.Scene {
   // ---------- Ввод ----------
 
   private setFlap(section: number) {
+    this.waiting = false
+    this.hideHint()
     const next = Phaser.Math.Clamp(section, 0, 2)
     if (next === this.flap) return
     this.flap = next
-    this.hideHint()
     platform.haptic('tap')
     sfx.tone(300 + next * 60, 0.04, 'square', 0.03)
     this.drawFlap()

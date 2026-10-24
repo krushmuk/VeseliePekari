@@ -6,6 +6,7 @@ import { loadDialog } from '../../../dialogs'
 import { platform } from '../../../../platform'
 import { PauseIcon } from '../../../icons'
 import { PERFECT_MISSES, PRESS_CONFIG } from './config'
+import { ForemanArt } from './ForemanArt'
 import { MasterArt } from './MasterArt'
 import { ShopScene } from './ShopScene'
 import { PressScene, type PressBridge, type PressHud, type PressResult } from './PressScene'
@@ -164,7 +165,7 @@ export default function PressLevel({ paused, onFinish, onPause }: LevelProps) {
             </span>
           </div>
           <div className="bottling-intro-char" aria-label={lines[part].who}>
-            {stage === 'press' && <MasterArt />}
+            {stage === 'shop' ? <ForemanArt /> : <MasterArt />}
           </div>
         </div>
       )}

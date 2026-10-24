@@ -7,6 +7,7 @@ import { platform } from '../../../platform'
 import { PauseIcon } from '../../icons'
 import { BottlingScene, type BottlingBridge, type HudState, type ShiftResult } from './BottlingScene'
 import { levelConfig, LEVELS, PERFECT_MISSES, type LevelConfig } from './config'
+import { ForemanArt } from './press/ForemanArt'
 import PressLevel from './press/PressLevel'
 import { PRESS_LEVEL } from './press/config'
 import './bottling.css'
@@ -106,7 +107,9 @@ function ConveyorLevels({ levelIndex, paused, onFinish, onPause }: LevelProps) {
               {part < INTRO.length - 1 ? 'Нажмите, чтобы продолжить' : 'Нажмите, чтобы начать'}
             </span>
           </div>
-          <div className="bottling-intro-char" aria-label={INTRO[part].who} />
+          <div className="bottling-intro-char" aria-label={INTRO[part].who}>
+            <ForemanArt />
+          </div>
         </div>
       )}
     </div>
