@@ -911,6 +911,28 @@
   animation-duration: 0.25s, 3s;
 }
 
+/* «Лаборант»: светлая картинка — строки развёртки едва заметны, белая полоса не нужна */
+.career .chapter-screen .chapter-art.lab {
+  background: linear-gradient(#cfdce2 0 86%, #6f848f 86%);
+}
+
+.career .chapter-screen .chapter-art.lab .conveyor-art {
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+.career .chapter-screen .chapter-art.lab::before {
+  background: repeating-linear-gradient(0deg, rgba(43, 50, 54, 0.07) 0 2px, transparent 2px 4px);
+}
+
+/* Виньетка: края картинки затемнены, центр остаётся светлым */
+.career .chapter-screen .chapter-art.lab::after {
+  inset: 0;
+  height: auto;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(20, 38, 48, 0.5) 100%);
+  animation: none;
+}
+
 @keyframes c-scan-crawl {
   to {
     background-position: 0 4px;
@@ -1910,4 +1932,48 @@
 .career .item-icon {
   width: 40px;
   height: 40px;
+}
+
+/* «Оператор технологического цеха»: чан целиком (вид сверху); по бокам — стены завода с трубами, внизу бетонный пол */
+.career .chapter-screen .chapter-art.techshop {
+  --pipe: linear-gradient(90deg, #3d4a53 0 15%, #e8f1f4 15% 30%, #9fb0bc 30% 75%, #5f717b 75% 100%);
+  --pipe-y: linear-gradient(90deg, #8a6d12 0 15%, #fff2a8 15% 30%, #f4d35e 30% 75%, #b8941c 75% 100%);
+  --pipe-b: linear-gradient(90deg, #17305f 0 15%, #7ea6e8 15% 30%, #2d56a3 30% 75%, #1f3b73 75% 100%);
+  --brackets: repeating-linear-gradient(0deg, #1b1f2e 0 4px, transparent 4px 36px);
+  background-color: #b9ad94;
+  background-image:
+    var(--brackets), var(--pipe), var(--pipe-y), var(--pipe-b),
+    var(--brackets), var(--pipe), var(--pipe-y), var(--pipe-b),
+    repeating-linear-gradient(45deg, #f4d35e 0 6px, #1b1f2e 6px 12px),
+    repeating-linear-gradient(45deg, #f4d35e 0 6px, #1b1f2e 6px 12px),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.25) 0 2px, transparent 2px 32px),
+    linear-gradient(#26303a, #26303a),
+    linear-gradient(#26303a, #26303a),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.12) 0 2px, transparent 2px 24px),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.12) 0 2px, transparent 2px 24px);
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat,
+    repeat-y, repeat-y, no-repeat, no-repeat, no-repeat, repeat, repeat;
+  background-size:
+    44px 100%, 10px 100%, 8px 100%, 10px 100%,
+    44px 100%, 10px 100%, 8px 100%, 10px 100%,
+    6px 100%, 6px 100%, 100% 100%, 54px 100%, 54px 100%, auto, auto;
+  background-position:
+    left 0 top 0, left 4px top 0, left 18px top 0, left 30px top 0,
+    right 0 top 0, right 4px top 0, right 18px top 0, right 30px top 0,
+    left 54px top 0, right 54px top 0, 0 0, left top, right top, 0 0, 0 0;
+}
+
+.career .chapter-screen .chapter-art.techshop .conveyor-art {
+  object-fit: contain;
+}
+
+.career .chapter-screen .chapter-art.techshop::before {
+  background: repeating-linear-gradient(0deg, rgba(43, 50, 54, 0.07) 0 2px, transparent 2px 4px);
+}
+
+.career .chapter-screen .chapter-art.techshop::after {
+  inset: 0;
+  height: auto;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(60, 40, 20, 0.45) 100%);
+  animation: none;
 }

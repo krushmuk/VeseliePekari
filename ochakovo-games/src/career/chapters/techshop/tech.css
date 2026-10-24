@@ -1,0 +1,370 @@
+/* Уровни тех цеха. Графики нет: плашки, рамки и текст. Шапка — как в лаборатории (bottling.css, lab.css) */
+.tech {
+  image-rendering: pixelated;
+  /* Тёплая кирпичная стена, чтобы выделять холодную сталь и синюю ленту (плитка рисуется в wallUrl) */
+  background-color: #5e3528;
+  background-image: var(--wall);
+  background-size: 128px 64px;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  color: #F1F2F3;
+}
+
+.tech .hud-lab {
+  grid-template-columns: 44px repeat(3, 1fr);
+}
+
+.tech-field {
+  position: absolute;
+  inset: calc(var(--safe-top, 0px) + 72px) 16px calc(var(--safe-bottom, 0px) + 16px);
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  gap: 8px;
+  touch-action: none;
+  user-select: none;
+}
+
+/* Технологическая карта: стальная табличка с заклёпками, красная шапка и тёмный экран с рецептурой */
+/* Одна линия: карта, лента, смеситель. На втором уровне две линии рядом */
+.tech-line {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tech-card {
+  position: relative;
+  margin-top: 4px;
+  padding: 0 6px 6px;
+  border: 4px solid #1b1f2e;
+  background: #b7c5cf;
+  box-shadow: inset -4px -4px 0 #7f909c, inset 4px 4px 0 #e3ebf0, 4px 4px 0 #000;
+  text-align: center;
+}
+
+/* Заклёпки по углам */
+.tech-card::before,
+.tech-card::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  width: 4px;
+  height: 4px;
+  background: #4f5d6a;
+  box-shadow: 1px 1px 0 #e3ebf0;
+}
+
+.tech-card::before {
+  left: 8px;
+}
+
+.tech-card::after {
+  right: 8px;
+}
+
+.tech-card > small {
+  display: block;
+  margin: 4px -2px 6px;
+  padding: 6px 0;
+  background: #CD004B;
+  box-shadow: inset 0 -4px 0 #8f0035;
+  font-size: 8px;
+  text-transform: uppercase;
+  color: #F1F2F3;
+}
+
+.tech-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 6px;
+  border: 4px solid #1b1f2e;
+  background: repeating-linear-gradient(#23363b 0 8px, #2a3f45 8px 12px);
+}
+
+.tech-card-body b {
+  font-size: 10px;
+  font-weight: 400;
+  color: #F1F2F3;
+}
+
+.tech-card-body ul {
+  display: flex;
+  justify-content: space-around;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tech-card-body li {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 7px;
+  line-height: 1.5;
+  color: #a6f05c;
+}
+
+.tech-card-body .tech-icon {
+  width: 32px;
+  height: 32px;
+  padding: 2px;
+  border: 4px solid #1b1f2e;
+  background: #b7c5cf;
+  box-shadow: inset -2px -2px 0 #7f909c, inset 2px 2px 0 #e3ebf0;
+  box-sizing: content-box;
+}
+
+/* Лента: стальные борта с болтами, внутри пластинчатое полотно (плитки в beltUrls) едет сверху вниз к смесителю */
+.tech-pipe {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 94%;
+  margin: 0 auto;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  background:
+    var(--rail-l) 0 0 / 12px 32px repeat-y border-box,
+    var(--rail-r) 100% 0 / 12px 32px repeat-y border-box,
+    var(--belt) 0 0 / 64px 32px repeat padding-box;
+  box-shadow: inset 8px 0 0 rgba(0, 0, 0, 0.25), inset -8px 0 0 rgba(0, 0, 0, 0.25), 0 4px 0 #000;
+  animation: tech-belt 0.6s steps(4) infinite;
+  touch-action: none;
+}
+
+.tech.frozen .tech-pipe,
+.tech.frozen .tech-vat-window i {
+  animation-play-state: paused;
+}
+
+@keyframes tech-belt {
+  from {
+    background-position: 0 0, 100% 0, 0 0;
+  }
+  to {
+    background-position: 0 0, 100% 0, 0 32px;
+  }
+}
+
+.tech-item {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 6px;
+  border: 4px solid #1b1f2e;
+  background: #b7c5cf;
+  box-shadow: inset -4px -4px 0 #7f909c, inset 4px 4px 0 #e3ebf0;
+  color: #1b1f2e;
+  font-size: 12px;
+  line-height: 1.25;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.tech-icon {
+  flex: none;
+  width: 36px;
+  height: 36px;
+}
+
+.tech-item.burn {
+  background: #CD004B;
+  box-shadow: inset -4px -4px 0 #8f0035, inset 4px 4px 0 #ff3d7f;
+  color: #F1F2F3;
+  animation: tech-burn 0.3s steps(3) forwards;
+}
+
+@keyframes tech-burn {
+  to {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+/* Смеситель с лампой «Брак» */
+.tech-mixer {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 16px;
+}
+
+.tech-vat {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  max-width: 260px;
+}
+
+.tech-vat.bad {
+  filter: drop-shadow(0 0 6px #ff3d7f);
+}
+
+/* Смотровое окно: смесь и пузыри */
+.tech-vat-window {
+  position: absolute;
+  overflow: hidden;
+  background: #c4842d;
+  box-shadow: inset 0 4px 0 #f1d9a0;
+}
+
+.tech-vat-window i {
+  position: absolute;
+  bottom: -6px;
+  width: 4px;
+  height: 4px;
+  background: #f1d9a0;
+  animation: tech-bubble 1.6s steps(8) infinite;
+}
+
+@keyframes tech-bubble {
+  to {
+    transform: translateY(-90px);
+    opacity: 0;
+  }
+}
+
+.tech-vat > svg {
+  position: relative;
+  display: block;
+}
+
+.tech-lamp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 8px;
+  text-transform: uppercase;
+  color: #7d878c;
+}
+
+/* Сигнальная лампа: стеклянный колпак на стальном основании */
+.tech-lamp i {
+  width: 28px;
+  height: 24px;
+  border: 4px solid #1b1f2e;
+  border-bottom-width: 8px;
+  background: #5a2a36;
+}
+
+.tech-lamp.on {
+  color: #ff3d7f;
+}
+
+.tech-lamp.on i {
+  background: #ff3d7f;
+  box-shadow: 0 0 12px 4px #CD004B;
+  animation: intro-blink 0.3s steps(1, end) infinite;
+}
+
+/* Реплика начальника смены сверху, чтобы не закрывать смесители и лампы; касания пропускает */
+.tech-reply {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: calc(var(--safe-top, 0px) + 80px);
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 12px 14px;
+  border: 4px solid #F1F2F3;
+  background: #35383B;
+  color: #F1F2F3;
+  box-shadow: 6px 6px 0 #CD004B;
+  pointer-events: none;
+  animation: intro-pop 0.18s steps(3, end);
+}
+
+.tech-reply small {
+  display: block;
+  font-size: 9px;
+  color: #ff3d7f;
+  text-transform: uppercase;
+}
+
+.tech-reply p {
+  margin: 8px 0 0;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* Две линии: поле шире, плашки и подписи мельче */
+.tech-two .tech-field {
+  inset-inline: 6px;
+  max-width: 460px;
+  gap: 6px;
+}
+
+.tech-two .tech-line {
+  gap: 6px;
+}
+
+.tech-two .tech-card {
+  padding: 0 3px 4px;
+}
+
+.tech-two .tech-card > small {
+  margin: 3px -1px 4px;
+  padding: 5px 0;
+  font-size: 7px;
+}
+
+.tech-two .tech-card-body {
+  gap: 6px;
+  padding: 6px 4px;
+}
+
+/* Две строки иконок у обеих карт: высота одинаковая, даже если ингредиентов меньше */
+.tech-two .tech-card-body ul {
+  flex-wrap: wrap;
+  align-content: center;
+  gap: 4px 0;
+  min-height: 120px;
+}
+
+.tech-two .tech-card-body li {
+  flex: 0 0 33.33%;
+  font-size: 6px;
+}
+
+.tech-two .tech-pipe {
+  width: 100%;
+}
+
+.tech-two .tech-item {
+  height: 48px;
+  gap: 4px;
+  padding: 0 4px;
+  border-width: 3px;
+  font-size: 7px;
+  line-height: 1.3;
+}
+
+.tech-two .tech-item .tech-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.tech-two .tech-lamp {
+  font-size: 6px;
+  margin-bottom: 4px;
+}
+
+.tech-two .tech-lamp i {
+  width: 20px;
+  height: 18px;
+  border-width: 3px;
+  border-bottom-width: 6px;
+}
