@@ -54,19 +54,21 @@ type ChapterCat = (typeof CHAPTER_CATS)[number]
 
 /** «Сканер (ТСД)» → «сканер (ТСД)», аббревиатуры не трогаем */
 const lower = (name: string) => (/^.[А-ЯЁ]/.test(name) ? name : name[0].toLowerCase() + name.slice(1))
+const cap = (text: string) => text[0].toUpperCase() + text.slice(1)
 const list = (items: Item[], sep = ', ') => items.map(i => lower(i.name)).join(sep)
 
 // Вердикты называют вещи, которые игрок выбрал в этой категории (до трёх)
 const VERDICTS: Record<ChapterCat, (mine: Item[]) => string> = {
-  warehouse: m => `Так, ты взял ${list(m, ' и ')}... Ты — наш человек! Значит, тебе на склад. Там нужны те, кто любит порядок.`,
-  bottling: m => `Ты взял ${list(m, ' и ')} — это святое! Тебе в цех розлива, там без этого никуда. И квас бери, он тебе там понадобится.`,
-  techshop: m => `Слушай, а у тебя инженерное мышление. Ты взял ${list(m, ' и ')}... По тебе техпроцессы плачут. Пошли туда.`,
-  lab: m => `О, ты взял ${list(m, ' и ')}. Да ты у нас будущий учёный! В лаборатории такие нужны. Ну что, пошли?`,
+  warehouse: m => `${cap(list(m))} — да ты у нас прирождённый кладовщик! Тебе на склад. Там нужны те, кто любит порядок.`,
+  bottling: m => `${cap(list(m))} — да ты у нас настоящий розливщик! Тебе в цех розлива, там без этого никуда. И квас бери, он тебе там понадобится.`,
+  techshop: m => `${cap(list(m))} — да ты у нас прирождённый инженер! По тебе техпроцессы плачут. Пошли туда.`,
+  lab: m => `${cap(list(m))} — да ты у нас будущий учёный! В лаборатории такие нужны. Ну что, пошли?`,
 }
 
 const mixedVerdict = (a: Item, b: Item) =>
-  `Слушай, а ты у нас парень непростой. Тут и ${lower(a.name)}, и ${lower(b.name)}. Универсал. Сам выбирай, куда пойдёшь.`
-const JUNK_VERDICT = 'Плюшевый мишка, спальный мешок... Ты на завод пришёл или на дачу? Ладно, иди выбирай, куда тебя такого пристроить.'
+  `${cap(list([a, b]))} — да ты у нас парень непростой! Универсал. Сам выбирай, куда пойдёшь.`
+const junkVerdict = (m: Item[]) =>
+  `${cap(list(m))} — да ты у нас на дачу собрался! Ты на завод пришёл или отдыхать? Ладно, иди выбирай, куда тебя такого пристроить.`
 
 const JUNK_REPLY = 'Ты куда, это мои вещи, я тут живу!'
 const SAME_REPLY = 'Ого! Да ты у нас целеустремлённый. Всё под одну гребёнку берёшь. Ну, допустим.'
@@ -182,7 +184,7 @@ export function PrologueScreen({ onDone, onExit }: Props) {
     else if (n[item.cat] === 4) setReply(SAME_REPLY)
     else if (next.length === LIMIT && CHAPTER_CATS.every(c => n[c] > 0)) {
       const each = CHAPTER_CATS.map(c => lower(next.map(id => ITEMS.find(i => i.id === id)!).find(i => i.cat === c)!.name))
-      setReply(`Хм, у тебя тут и ${each.slice(0, 3).join(', и ')}. Ты что, хочешь за всех отдуваться? Ладно, универсал, посмотрим на тебя.`)
+      setReply(`${cap(each.slice(0, 3).join(', '))} — да ты у нас за всех отдуваться собрался? Ладно, универсал, посмотрим на тебя.`)
     }
   }
 
@@ -194,7 +196,7 @@ export function PrologueScreen({ onDone, onExit }: Props) {
   const best = top.length === 1 && counts.junk <= maxCount ? top[0] : null
 
   function verdict(): string {
-    if (counts.junk > maxCount) return JUNK_VERDICT
+    if (counts.junk > maxCount) return junkVerdict(mine('junk').slice(0, 2))
     if (best) return VERDICTS[best](mine(best).slice(0, 2))
     // Ничья: по одному выбранному предмету от двух лидирующих категорий
     return mixedVerdict(mine(top[0])[0], mine(top[1])[0])
@@ -319,7 +321,7 @@ export function PrologueScreen({ onDone, onExit }: Props) {
   return (
     <div className="screen dialog-screen prologue-px">
       <div className="dialog-stage">
-        <div className="dialog-char" aria-label="Кладовщик" />
+        <StorageArt />
       </div>
       <div className="dialog-bubble">
         <small>Кладовщик</small>

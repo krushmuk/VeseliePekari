@@ -204,9 +204,6 @@ export function Landing({ onPlay, scrollTo }: Props) {
                 Сыграть
               </a>
             )}
-            <a className="btn btn-ghost" href="#contacts" onClick={jump}>
-              Откликнуться
-            </a>
           </div>
         </div>
       </header>
@@ -330,7 +327,7 @@ export function Landing({ onPlay, scrollTo }: Props) {
                   <b>2</b>Узнаёшь завод изнутри — без экскурсии
                 </li>
                 <li>
-                  <b>3</b>Получаешь бонусы по реферальной программе
+                  <b>3</b>Делишься прогрессом с друзьями
                 </li>
               </ol>
               <div className="actions">
@@ -404,7 +401,7 @@ export function Landing({ onPlay, scrollTo }: Props) {
                 <Choice
                   id="e-dir"
                   name="direction"
-                  options={['Производство', 'Лаборатория', 'Склад и логистика', 'Стажировка в офисе', 'Пока не знаю — расскажите']}
+                  options={['Цех розлива', 'Технологический цех', 'Лаборатория', 'Склад и логистика', 'Пока не знаю — расскажите']}
                 />
               </div>
               <button className="btn btn-amber" type="submit">
