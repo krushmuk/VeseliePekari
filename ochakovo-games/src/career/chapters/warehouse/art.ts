@@ -75,9 +75,27 @@ export function drawBackdrop(g: G) {
   rack(g)
 }
 
+/** Стена: бетонные блоки в шахматном порядке, швы потемнее, у блоков слегка разный тон, крапины и сколы */
 function wall(g: G) {
-  g.fillStyle(C.wall)
-  g.fillRect(AREA.x, AREA.y, AREA.w, FLOOR_Y - AREA.y)
+  const h = FLOOR_Y - AREA.y
+  g.fillStyle(C.wallDark)
+  g.fillRect(AREA.x, AREA.y, AREA.w, h)
+  const bw = 28
+  const bh = 14
+  for (let row = 0, y = AREA.y; y < FLOOR_Y; row++, y += bh) {
+    const x0 = AREA.x - (row % 2 ? bw / 2 : 0)
+    for (let col = 0, x = x0; x < AREA.x + AREA.w; col++, x += bw) {
+      const t = hash(col + 3, row + 7)
+      g.fillStyle(t < 0.33 ? C.wall : t < 0.66 ? shade(C.wall, 0.05) : shade(C.wall, -0.05))
+      g.fillRect(x + 1, y + 1, bw - 2, Math.min(bh - 2, FLOOR_Y - y - 1))
+      // светлая кромка сверху и слева
+      g.fillStyle(C.wallLight, 0.5)
+      g.fillRect(x + 1, y + 1, bw - 2, 1)
+      g.fillRect(x + 1, y + 1, 1, Math.min(bh - 2, FLOOR_Y - y - 1))
+    }
+  }
+  specks(g, AREA.x, AREA.y, AREA.w, h, C.wallDark, 0.5, 0.01, 5)
+  specks(g, AREA.x, AREA.y, AREA.w, h, C.wallLight, 0.4, 0.006, 9)
 }
 
 function floor(g: G) {

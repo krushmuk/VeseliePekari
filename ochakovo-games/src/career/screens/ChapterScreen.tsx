@@ -58,7 +58,7 @@ export function ChapterScreen({ chapter, onBack, onPlay }: Props) {
 
       <ol className="levels">
         {chapter.levels.map((level, k) => {
-          const open = isLevelOpen(progress, chapter.id, k)
+          const open = !level.soon && isLevelOpen(progress, chapter.id, k)
           const stars = levelStars(progress, chapter.id, k)
           const exam = k === last
           return (

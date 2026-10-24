@@ -161,12 +161,18 @@ export class PackScene extends Phaser.Scene {
     this.emitHud()
   }
 
-  // Целое увеличение, при котором влезает важная часть поля; поле по центру
+  // Камера на весь экран (стена видна и над полем), а поле сдвинуто ниже панели интерфейса:
+  // иначе панель закрывает полосу заказа. Целое увеличение, при котором влезает важная часть поля
   private fit() {
     const cam = this.cameras.main
-    const zoom = Math.max(1, Math.floor(Math.min(this.scale.width / FIELD.minW, this.scale.height / FIELD.minH)))
+    const canvas = this.game.canvas
+    const rect = canvas.getBoundingClientRect()
+    const hud = canvas.parentElement?.parentElement?.querySelector('.bottling-hud')
+    const k = rect.height > 0 ? canvas.height / rect.height : 1
+    const top = hud ? Math.max(0, Math.ceil((hud.getBoundingClientRect().bottom - rect.top + 6) * k)) : 0
+    const zoom = Math.max(1, Math.floor(Math.min(this.scale.width / FIELD.minW, (this.scale.height - top) / FIELD.minH)))
     cam.setZoom(zoom)
-    cam.centerOn(FIELD.w / 2, FIELD.h / 2)
+    cam.centerOn(FIELD.w / 2, FIELD.h / 2 - top / (2 * zoom))
   }
 
   // ---------- Рисование ----------

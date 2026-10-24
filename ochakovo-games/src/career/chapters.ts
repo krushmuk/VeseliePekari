@@ -7,6 +7,8 @@ export interface LevelInfo {
   title: string
   /** Что нужно сделать — показывается перед стартом */
   goal: string
+  /** Уровень ещё не сделан: в списке виден, но закрыт даже при ?unlock */
+  soon?: boolean
 }
 
 /** То, что получает компонент уровней главы от общей оболочки */
@@ -67,9 +69,9 @@ export const CHAPTERS: ChapterInfo[] = [
       { title: 'Запуск линии', goal: 'Разложи бутылки по коробкам' },
       { title: 'Брак', goal: 'Убирай бракованные бутылки в отдельный ящик' },
       { title: 'Пресс', goal: 'Сортируй банки по секциям пресса' },
-      { title: 'TBA', goal: 'Скоро' },
-      { title: 'TBA', goal: 'Скоро' },
-      { title: 'TBA', goal: 'Скоро' },
+      { title: 'TBA', goal: 'Скоро', soon: true },
+      { title: 'TBA', goal: 'Скоро', soon: true },
+      { title: 'TBA', goal: 'Скоро', soon: true },
     ],
     component: lazy(() => import('./chapters/bottling/BottlingLevels')),
     fullscreen: true,
@@ -145,11 +147,11 @@ export const CHAPTERS: ChapterInfo[] = [
     ],
     levels: [
       { title: 'Тележка', goal: 'Собери три заказа по номерам, хрупкие коробки ставь сверху' },
-      { title: 'TBA', goal: 'Скоро' },
-      { title: 'TBA', goal: 'Скоро' },
-      { title: 'TBA', goal: 'Скоро' },
-      { title: 'TBA', goal: 'Скоро' },
-      { title: 'TBA', goal: 'Скоро' },
+      { title: 'TBA', goal: 'Скоро', soon: true },
+      { title: 'TBA', goal: 'Скоро', soon: true },
+      { title: 'TBA', goal: 'Скоро', soon: true },
+      { title: 'TBA', goal: 'Скоро', soon: true },
+      { title: 'TBA', goal: 'Скоро', soon: true },
     ],
     component: lazy(() => import('./chapters/warehouse/WarehouseLevels')),
     fullscreen: true,
