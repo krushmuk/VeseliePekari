@@ -10,6 +10,7 @@ import {
   useProgress,
 } from '../progress'
 import { ConveyorArt } from './ConveyorArt'
+import { WarehouseArt } from './WarehouseArt'
 import { TopBar } from './TopBar'
 
 interface Props {
@@ -52,6 +53,7 @@ export function ChapterScreen({ chapter, onBack, onPlay }: Props) {
       {/* Картинка главы */}
       <div className="chapter-art" aria-hidden="true">
         {chapter.id === 'bottling' ? <ConveyorArt /> : null}
+        {chapter.id === 'warehouse' ? <WarehouseArt /> : null}
       </div>
 
       <ol className="levels">

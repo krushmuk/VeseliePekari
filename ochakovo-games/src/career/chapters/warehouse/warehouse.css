@@ -1,0 +1,39 @@
+/* Уровни склада: пауза, два показателя и кнопка «сбросить» */
+.bottling-hud.hud-pack {
+  grid-template-columns: 44px repeat(2, 1fr) 44px;
+}
+
+.bottling-hud.hud-pack .bottling-pause {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 18px;
+}
+
+.bottling-hud.hud-pack .bottling-pause:disabled {
+  opacity: 0.5;
+}
+
+/* «Подтвердить» — внизу по центру, фиксирует раскладку */
+.warehouse-confirm {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--safe-bottom, 0px) + 16px);
+  transform: translateX(-50%);
+  padding: 14px 22px;
+  border: 4px solid #F1F2F3;
+  background: #CD004B;
+  color: #F1F2F3;
+  box-shadow: 4px 4px 0 #000;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.warehouse-confirm:active:not(:disabled) {
+  transform: translate(calc(-50% + 4px), 4px);
+  box-shadow: none;
+}
+
+.warehouse-confirm:disabled {
+  background: #404346;
+  color: #A2AAAD;
+}

@@ -135,6 +135,23 @@ export function KeeperAvatar() {
   )
 }
 
+/** Портрет кладовщика для рамки диалога на уровнях склада */
+export function KeeperPortrait() {
+  return (
+    <svg
+      viewBox="56 56 44 62"
+      width="100%"
+      height="100%"
+      preserveAspectRatio="xMidYMax meet"
+      shapeRendering="crispEdges"
+      role="img"
+      aria-label="Кладовщик"
+    >
+      {keeper()}
+    </svg>
+  )
+}
+
 export function StorageArt() {
   return (
     <svg

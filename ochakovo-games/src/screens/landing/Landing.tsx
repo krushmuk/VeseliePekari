@@ -82,7 +82,7 @@ const Pattern = ({ className }: { className: string }) => (
 const PERKS: { title: string; text: string; icon: ReactNode; hl?: boolean }[] = [
   {
     title: 'Официально',
-    text: 'Трудоустройство по ТК РФ, заработная плата 2 раза в месяц, полисы ДМС',
+    text: 'Трудоустройство по ТК РФ, заработная плата 2 раза в месяц, полисы ДМС.',
     icon: <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6M8 14l2.5 2.5L16 11" />,
   },
   {
@@ -107,12 +107,12 @@ const PERKS: { title: string; text: string; icon: ReactNode; hl?: boolean }[] = 
   },
   {
     title: 'Бонусы',
-    text: 'Частичная компенсация питания в корпоративной столовой, льготные путёвки в санаторий',
+    text: 'Частичная компенсация питания в корпоративной столовой, льготные путёвки в санаторий.',
     icon: <path d="M3 8h18v4H3zM5 12v9h14v-9M12 8v13M12 8c-2 0-4-1-4-3s3-2 4 3zM12 8c2 0 4-1 4-3s-3-2-4 3z" />,
   },
   {
     title: 'Стажировки',
-    text: 'Для студентов профильных и не очень специальностей. Принимаем молодые таланты круглогодично.',
+    text: 'Для студентов профильных и не очень специальностей. Принимаем молодых талантов круглогодично.',
     icon: <path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z" />,
     hl: true,
   },
@@ -388,6 +388,10 @@ export function Landing({ onPlay, scrollTo }: Props) {
             <form id="apply" className="form" onSubmit={onSubmit}>
               <h3>Не любишь звонить?</h3>
               <p>Оставь контакт — HR напишет сам и расскажет про вакансии. Без анкет на пять страниц.</p>
+              <div className="age-note">
+                <b>18+</b>
+                <span>Принимаем на работу только совершеннолетних</span>
+              </div>
               <div className="field">
                 <label htmlFor="e-name">Как тебя зовут</label>
                 <input id="e-name" name="name" autoComplete="given-name" required />
@@ -395,6 +399,10 @@ export function Landing({ onPlay, scrollTo }: Props) {
               <div className="field">
                 <label htmlFor="e-contact">Телефон или Telegram</label>
                 <input id="e-contact" name="contact" required />
+              </div>
+              <div className="field">
+                <label htmlFor="e-study">Где учишься</label>
+                <input id="e-study" name="study" placeholder="Название учебного заведения" autoComplete="organization" />
               </div>
               <div className="field">
                 <label htmlFor="e-dir">Что интересно</label>
