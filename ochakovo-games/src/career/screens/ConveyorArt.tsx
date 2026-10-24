@@ -202,7 +202,7 @@ export function ConveyorArt() {
       // 20 кадров в секунду: пиксель-арт не нужна плавность
       if (now - last < 50) return
       last = now
-      draw(ctx, (now - start) / 1000)
+      draw(ctx, Math.max(0, now - start) / 1000)
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)

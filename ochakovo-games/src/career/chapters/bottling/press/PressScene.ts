@@ -191,31 +191,35 @@ export class PressScene extends Phaser.Scene {
       const dx = vertexX - x0
       const dy = vertexY - startY
       const at = (t: number) => ({ x: x0 + dx * t, y: startY + dy * t })
+      // Продолжение ветки за верхним концом: на широком экране жёлоб доходит до верха, а не обрывается
+      const ext = (startY + 80) / dy
+      const xs = x0 - dx * ext
+      const ys = startY - dy * ext
 
       // Задняя стенка лотка за банками
       g.fillStyle(0x2a312e)
       g.fillPoints(
-        [new Phaser.Math.Vector2(x0, startY - 18), new Phaser.Math.Vector2(vertexX, vertexY - 18), new Phaser.Math.Vector2(vertexX, vertexY), new Phaser.Math.Vector2(x0, startY)],
+        [new Phaser.Math.Vector2(xs, ys - 18), new Phaser.Math.Vector2(vertexX, vertexY - 18), new Phaser.Math.Vector2(vertexX, vertexY), new Phaser.Math.Vector2(xs, ys)],
         true,
       )
       g.lineStyle(1, 0x14110f)
-      g.lineBetween(x0, startY - 18, vertexX, vertexY - 18)
+      g.lineBetween(xs, ys - 18, vertexX, vertexY - 18)
       // Кронштейны под лотком
       g.lineStyle(2, 0x1d2420)
-      for (const t of [0.15, 0.5, 0.85]) {
+      for (const t of [0.15, 0.5, 0.85, -0.35, -0.85, -1.35, -1.85]) {
         const p = at(t)
         g.lineBetween(p.x, p.y + 4, p.x + side * -5, p.y + 14)
       }
       // Дно лотка: тёмный низ, сталь, светлая кромка
       g.lineStyle(1, 0x14110f)
-      g.lineBetween(x0, startY + 5, vertexX, vertexY + 5)
+      g.lineBetween(xs, ys + 5, vertexX, vertexY + 5)
       g.lineStyle(3, 0x4b5a52)
-      g.lineBetween(x0, startY + 2.5, vertexX, vertexY + 2.5)
+      g.lineBetween(xs, ys + 2.5, vertexX, vertexY + 2.5)
       g.lineStyle(1, 0xc9d3d6)
-      g.lineBetween(x0, startY, vertexX, vertexY)
+      g.lineBetween(xs, ys, vertexX, vertexY)
       // Заклёпки по дну
       g.fillStyle(0x1d2420)
-      for (const t of [0.08, 0.25, 0.42, 0.59, 0.76, 0.93]) {
+      for (const t of [0.08, 0.25, 0.42, 0.59, 0.76, 0.93, -0.1, -0.27, -0.44, -0.61, -0.78, -0.95, -1.12, -1.29, -1.46, -1.63, -1.8]) {
         const p = at(t)
         g.fillRect(Math.round(p.x), Math.round(p.y) + 2, 1, 1)
       }
@@ -286,20 +290,34 @@ export class PressScene extends Phaser.Scene {
     const tipX = CHUTE.vertexX + (sectionX(this.flap) - CHUTE.vertexX) * FLAP.reach
     const f = this.flapGfx
     f.clear()
-    // Створка разделителя: тёмный контур, красная краска, светлая кромка
+    // Створка разделителя: тёмный контур, выцветшая краска (приглушена к стали), потёртая кромка
+    const paint = mix(COLORS.flap, 0x555d5a, 0.55)
+    const dx = tipX - CHUTE.vertexX
+    const dy = FLAP.tipY - FLAP.pivotY
+    const at = (t: number) => ({ x: Math.round(CHUTE.vertexX + dx * t), y: Math.round(FLAP.pivotY + dy * t) })
     f.lineStyle(7, 0x14110f)
     f.lineBetween(CHUTE.vertexX, FLAP.pivotY, tipX, FLAP.tipY)
-    f.lineStyle(5, COLORS.flap)
+    f.lineStyle(5, paint)
     f.lineBetween(CHUTE.vertexX, FLAP.pivotY, tipX, FLAP.tipY)
-    f.lineStyle(1, 0xff7aa6)
+    f.lineStyle(1, mix(paint, 0xffffff, 0.2))
     f.lineBetween(CHUTE.vertexX - 1, FLAP.pivotY, tipX - 1, FLAP.tipY)
-    // Ось с болтом
+    // Следы старости: облупившаяся краска до металла, пятна ржавчины, тёмная копоть
+    for (const [t, dark] of [[0.3, false], [0.55, true], [0.8, false]] as const) {
+      const p = at(t)
+      f.fillStyle(dark ? 0x8a4a22 : 0x7f909c, 0.8)
+      f.fillRect(p.x - 1, p.y, 2, 1)
+    }
+    f.fillStyle(0x14110f, 0.3)
+    f.fillRect(at(0.65).x, at(0.65).y - 1, 1, 2)
+    // Ось с болтом: матовая сталь, ржавый ободок
     f.fillStyle(0x14110f)
     f.fillCircle(CHUTE.vertexX, FLAP.pivotY, 4.5)
-    f.fillStyle(0x7f909c)
+    f.fillStyle(0x65776c)
     f.fillCircle(CHUTE.vertexX, FLAP.pivotY, 3.5)
-    f.fillStyle(0xe3ebf0)
-    f.fillRect(CHUTE.vertexX - 2, FLAP.pivotY - 2, 2, 2)
+    f.fillStyle(0x8a4a22, 0.7)
+    f.fillRect(CHUTE.vertexX + 1, FLAP.pivotY + 1, 2, 2)
+    f.fillStyle(0xa9b4b8)
+    f.fillRect(CHUTE.vertexX - 2, FLAP.pivotY - 2, 2, 1)
     f.fillStyle(0x14110f)
     f.fillRect(CHUTE.vertexX - 1, FLAP.pivotY, 3, 1)
 

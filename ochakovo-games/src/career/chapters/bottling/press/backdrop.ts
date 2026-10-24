@@ -29,18 +29,9 @@ const hash = (a: number, b: number) => {
   return n - Math.floor(n)
 }
 
-/** Олимпийские кольца: цвет и центр относительно середины знака */
-const RINGS: [number, number, number][] = [
-  [0x2a6fb5, -21, 0],
-  [0xd9b83a, -10.5, 9],
-  [0x1c1c1c, 0, 0],
-  [0x3a9a5a, 10.5, 9],
-  [0xc0382f, 21, 0],
-]
-
 export function drawBackdrop(g: Phaser.GameObjects.Graphics) {
   brickWall(g)
-  olympicRings(g, FIELD.w / 2, 46)
+  olympicRings(g, FIELD.w / 2, -16)
   floor(g)
   press(g)
 }
@@ -72,16 +63,68 @@ function brickWall(g: Phaser.GameObjects.Graphics) {
   }
 }
 
-/** Выцветшие кольца: бледные штрихи и «выеденные» временем пятна поверх них */
-function olympicRings(g: Phaser.GameObjects.Graphics, cx: number, cy: number) {
-  for (const [color, dx, dy] of RINGS) {
-    g.lineStyle(2, color, 0.4)
-    g.strokeCircle(cx + dx, cy + dy, 10)
+/** Цвет знака: выцветшая красная краска */
+const EMBLEM = { color: 0xe5483b, alpha: 0.95 }
+
+/** Выцветший знак «Москва-80»: звезда, башня из линий, три пары загнутых полос и пять колец.
+ *  Размеры взяты из эталона REF/лого олимпиада.jpg (ось x — от середины знака, единицы эталона). */
+function olympicRings(g: Phaser.GameObjects.Graphics, cx: number, top: number) {
+  const k = 0.04
+  const X = (x: number) => cx + x * k
+  const Y = (y: number) => top + y * k
+  const R = (r: number) => r * k
+  const stroke = (w: number) => g.lineStyle(Math.max(1, Math.round(R(w))), EMBLEM.color, EMBLEM.alpha)
+
+  // Звезда
+  g.fillStyle(EMBLEM.color, EMBLEM.alpha)
+  g.beginPath()
+  for (let i = 0; i < 10; i++) {
+    const a = -Math.PI / 2 + (i * Math.PI) / 5
+    const r = i % 2 ? 28 : 70
+    g.lineTo(X(r * Math.cos(a)), Y(70 + r * Math.sin(a)))
   }
+  g.closePath()
+  g.fillPath()
+
+  // Центральная мачта и по две полосы с каждой стороны: вертикаль, дуга, горизонталь до края
+  stroke(35)
+  g.lineBetween(X(0), Y(146), X(0), Y(1112))
+  // [отступ от оси, верх, y горизонтали, радиус дуги]
+  const bands: [number, number, number, number][] = [
+    [0, 146, 1317, 205],
+    [64, 350, 1252, 146],
+    [128, 527, 1187, 90],
+  ]
+  for (const side of [-1, 1]) {
+    for (const [off, topY, rowY, r] of bands) {
+      stroke(35)
+      const vx = side * off
+      const arcCx = vx + side * r
+      const arcCy = rowY - r
+      if (off) g.lineBetween(X(vx), Y(topY), X(vx), Y(arcCy))
+      g.beginPath()
+      if (side < 0) g.arc(X(arcCx), Y(arcCy), R(r), 0, Math.PI / 2)
+      else g.arc(X(arcCx), Y(arcCy), R(r), Math.PI / 2, Math.PI)
+      g.strokePath()
+      g.lineBetween(X(arcCx), Y(rowY), X(side * 438), Y(rowY))
+    }
+  }
+
+  // Пять колец
+  stroke(14)
+  const rings: [number, number][] = [
+    [-292, 1491],
+    [0, 1491],
+    [292, 1491],
+    [-145, 1625],
+    [145, 1625],
+  ]
+  for (const [rx, ry] of rings) g.strokeCircle(X(rx), Y(ry), R(125))
+
   // Облупленные места: кирпич и раствор проступают сквозь краску
-  for (let i = 0; i < 90; i++) {
-    const x = cx - 34 + hash(i, 1) * 68
-    const y = cy - 12 + hash(i, 2) * 34
+  for (let i = 0; i < 45; i++) {
+    const x = cx - 20 + hash(i, 1) * 40
+    const y = top + hash(i, 2) * 72
     const w = 1 + Math.floor(hash(i, 3) * 3)
     const h = 1 + Math.floor(hash(i, 4) * 2)
     g.fillStyle(i % 3 ? C.bricks[i % C.bricks.length] : C.mortar, 0.85)
@@ -164,12 +207,32 @@ function press(g: Phaser.GameObjects.Graphics) {
     g.fillRect(x - 1, beamY - 8, 18, 2)
   }
 
-  // Манометр на балке
+  // Манометр на балке: простой круглый, но старый — пожелтевший циферблат, ржавый ободок, трещина на стекле
   const gx = FIELD.w / 2 + 40
+  const gy = beamY + 4
   g.fillStyle(C.dark)
-  g.fillCircle(gx, beamY + 4, 6)
-  g.fillStyle(0xe9e4cf)
-  g.fillCircle(gx, beamY + 4, 4)
-  g.lineStyle(1, 0xb0303a)
-  g.lineBetween(gx, beamY + 4, gx + 2, beamY + 1)
+  g.fillCircle(gx, gy, 6)
+  g.fillStyle(C.rust, 0.7)
+  g.fillRect(gx - 5, gy + 2, 2, 3)
+  g.fillRect(gx + 3, gy - 4, 2, 2)
+  g.fillStyle(0xcdbf8e)
+  g.fillCircle(gx, gy, 4)
+  // грязь и потёки на циферблате
+  g.fillStyle(0x8a6f3a, 0.5)
+  g.fillRect(gx - 3, gy + 1, 3, 2)
+  g.fillRect(gx + 1, gy - 3, 2, 1)
+  g.fillStyle(C.dark, 0.35)
+  g.fillRect(gx + 2, gy + 2, 1, 1)
+  // выцветшие деления
+  g.fillStyle(0x5a4a2a, 0.7)
+  for (const [dx, dy] of [[-3, 0], [0, -3], [3, 0]]) g.fillRect(gx + dx, gy + dy, 1, 1)
+  // стрелка: потемневшая, чуть погнутая
+  g.lineStyle(1, 0x7a2a2a)
+  g.lineBetween(gx, gy, gx + 2, gy - 3)
+  g.fillStyle(C.dark)
+  g.fillRect(gx, gy, 1, 1)
+  // трещина на стекле
+  g.lineStyle(1, 0xffffff, 0.35)
+  g.lineBetween(gx - 3, gy - 3, gx - 1, gy - 1)
+  g.lineBetween(gx - 1, gy - 1, gx - 1, gy + 1)
 }

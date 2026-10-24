@@ -6,6 +6,7 @@ import { loadDialog } from '../../../dialogs'
 import { platform } from '../../../../platform'
 import { PauseIcon } from '../../../icons'
 import { PERFECT_MISSES, PRESS_CONFIG } from './config'
+import { MasterArt } from './MasterArt'
 import { ShopScene } from './ShopScene'
 import { PressScene, type PressBridge, type PressHud, type PressResult } from './PressScene'
 import '../bottling.css'
@@ -35,6 +36,8 @@ function starsFor({ score, misses, failed }: PressResult) {
 export default function PressLevel({ paused, onFinish, onPause }: LevelProps) {
   const [hud, setHud] = useState<PressHud>({ score: 0, time: PRESS_CONFIG.shift, misses: 0 })
   const [stage, setStage] = useState<Stage>(SHOP.length ? 'shop' : PRESS.length ? 'press' : 'play')
+  // Этап для колбэков Phaser: игра может загрузиться позже, чем игрок пролистает реплики цеха
+  const stageRef = useRef(stage)
   const [part, setPart] = useState(0)
   const [fading, setFading] = useState(false)
   const [reply, setReply] = useState<{ who: string; text: string; id: number } | null>(null)
@@ -48,6 +51,10 @@ export default function PressLevel({ paused, onFinish, onPause }: LevelProps) {
   useEffect(() => {
     onFinishRef.current = onFinish
   }, [onFinish])
+
+  useEffect(() => {
+    stageRef.current = stage
+  }, [stage])
 
   useEffect(() => () => window.clearTimeout(replyTimer.current), [])
 
@@ -83,7 +90,8 @@ export default function PressLevel({ paused, onFinish, onPause }: LevelProps) {
     }
     gameRef.current = game
     bridgeRef.current = bridge
-    if (SHOP.length) game.scene.add('shop', ShopScene, true)
+    // Если игрок уже ушёл от цеха, пока грузился Phaser, сразу показываем пресс
+    if (SHOP.length && stageRef.current === 'shop') game.scene.add('shop', ShopScene, true)
     else startPress()
   }, [startPress])
 
@@ -106,6 +114,7 @@ export default function PressLevel({ paused, onFinish, onPause }: LevelProps) {
       setFading(true)
       window.setTimeout(() => {
         startPress()
+        stageRef.current = 'press'
         setStage('press')
         setPart(0)
       }, FADE_MS / 2)
@@ -154,7 +163,9 @@ export default function PressLevel({ paused, onFinish, onPause }: LevelProps) {
               {part < lines.length - 1 ? 'Нажмите, чтобы продолжить' : stage === 'shop' ? 'Нажмите, чтобы идти' : 'Нажмите, чтобы начать'}
             </span>
           </div>
-          <div className="bottling-intro-char" aria-label={lines[part].who} />
+          <div className="bottling-intro-char" aria-label={lines[part].who}>
+            {stage === 'press' && <MasterArt />}
+          </div>
         </div>
       )}
 
