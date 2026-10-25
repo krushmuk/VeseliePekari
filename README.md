@@ -5,7 +5,8 @@ by Весёлые Пекари \
 Работает в браузере на компьютере и телефоне.
 
 **Играть:** https://pekari.site \
-**Аналитика и текстовая часть** https://drive.google.com/drive/folders/1AvrgyHfkJRCUR6r9xFbKsByx84Q9gSn8
+[**Аналитика**](https://drive.google.com/drive/folders/1AvrgyHfkJRCUR6r9xFbKsByx84Q9gSn8) \
+[**Пояснительная записка**](https://docs.google.com/document/d/1FSxcg5Lw1w3YeeLsiMpA87QOLwY1GRRe/edit?usp=drivesdk&ouid=102107674969235479607&rtpof=true&sd=true)
 
 ## Стек
 
