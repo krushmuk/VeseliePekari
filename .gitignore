@@ -63,3 +63,11 @@ desktop.ini
 
 # Референсы брендбука
 REF/
+
+# Не публикуем: документы, листовка, презентация
+CLAUDE.md
+ochakovo-games/README.md
+ochakovo-games/docs/
+leaflet/
+presentation/
+ОЧАКОВО_Техническая_документация.txt

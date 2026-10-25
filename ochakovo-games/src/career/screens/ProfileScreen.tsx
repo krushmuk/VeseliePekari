@@ -6,7 +6,7 @@ import { COSMETICS, equippedIn, type Cosmetic, isOwned, itemsOf, SLOTS, type Cos
 import { BackIcon, CheckIcon, LockIcon, ShareIcon, StarIcon } from '../icons'
 import { buyItem, equip, maxStars, starBalance, totalStars, useProgress } from '../progress'
 import { MascotArt } from './MascotArt'
-import type { BodyWear, FeetWear, HeadWear } from './mascotPixels'
+import { buildMascot, MASCOT_H, MASCOT_W, type BodyWear, type FeetWear, type HeadWear } from './mascotPixels'
 import { TopBar } from './TopBar'
 
 interface Props {
@@ -24,10 +24,66 @@ export function ProfileScreen({ onBack }: Props) {
   const [preview, setPreview] = useState<Cosmetic | null>(null)
   useBack(onBack)
 
+  /** Картинка для отправки: логотип «ОЧАКОВО карьера» сверху и маскот в надетом (купленном) костюме; примерка не учитывается */
+  const mascotImage = async (): Promise<Blob | null> => {
+    const scale = 10
+    const pad = 4
+    const logoH = 110
+    const width = (MASCOT_W + pad * 2) * scale
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = logoH + (MASCOT_H + pad) * scale
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return null
+    ctx.fillStyle = '#0E1013'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    // логотип, как в шапке лендинга
+    const family = "'Proxima Nova', 'Montserrat Variable', 'Montserrat', 'Tahoma', system-ui, sans-serif"
+    await document.fonts?.load(`800 44px ${family}`).catch(() => [])
+    ctx.textBaseline = 'middle'
+    ctx.font = `800 44px ${family}`
+    ctx.letterSpacing = '1.3px'
+    const title = 'ОЧАКОВО'
+    const titleW = ctx.measureText(title).width
+    ctx.font = `800 28px ${family}`
+    ctx.letterSpacing = '0px'
+    const tagW = ctx.measureText('карьера').width
+    const chipW = tagW + 48
+    const chipH = 52
+    const gap = 20
+    const x0 = (width - titleW - gap - chipW) / 2
+    const cy = logoH / 2 + 6
+    ctx.font = `800 44px ${family}`
+    ctx.letterSpacing = '1.3px'
+    ctx.fillStyle = '#CD004B'
+    ctx.fillText(title, x0, cy)
+    ctx.letterSpacing = '0px'
+    const cx = x0 + titleW + gap
+    ctx.fillStyle = 'rgba(166, 240, 92, 0.14)'
+    ctx.beginPath()
+    ctx.roundRect(cx, cy - chipH / 2, chipW, chipH, chipH / 2)
+    ctx.fill()
+    ctx.font = `800 28px ${family}`
+    ctx.fillStyle = '#A6F05C'
+    ctx.fillText('карьера', cx + 24, cy + 1)
+
+    const worn = (id: CosmeticSlot) => equippedIn(progress, id).id
+    buildMascot(worn('head') as HeadWear, worn('body') as BodyWear, worn('feet') as FeetWear).forEach((row, y) =>
+      row.forEach((c, x) => {
+        if (!c) return
+        ctx.fillStyle = c
+        ctx.fillRect((x + pad) * scale, logoH + y * scale, scale, scale)
+      }),
+    )
+    return new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
+  }
+
   const share = async () => {
     platform.haptic('tap')
-    const text = `Я играю в «Профессии» от ОЧАКОВО и набрал ${totalStars(progress)} ★ из ${total}!`
-    const result = await platform.share(text, location.origin + location.pathname)
+    const text = 'Это мой Очак в «Очаково - The Game», создай своего!'
+    const image = await mascotImage()
+    const result = await platform.share(text, location.origin + location.pathname, image ?? undefined)
     if (result === 'copied') setNote('Ссылка скопирована')
     else if (result === 'failed') setNote('Не получилось поделиться')
     else return

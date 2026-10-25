@@ -2,9 +2,9 @@ import { useEffect, useState, type FormEvent, type MouseEvent, type ReactNode } 
 import { GAMES } from '../../games/registry'
 import { Choice } from './Choice'
 import photoMalt from '../../assets/landing/a1.jpg'
+import mascot from '../../assets/landing/ochak.png'
 import photoHops from '../../assets/landing/a2.jpg'
 import photoTeam from '../../assets/landing/c2.jpeg'
-import photoPlant from '../../assets/landing/c3.jpeg'
 import './landing.css'
 
 interface Props {
@@ -119,9 +119,9 @@ const PERKS: { title: string; text: string; icon: ReactNode; hl?: boolean }[] = 
 ]
 
 const SHOTS = [
-  { src: photoMalt, alt: 'Солодовня', caption: 'Здесь растёт солод' },
+  { src: photoMalt, alt: 'Солодовня', caption: 'Так обрабатывают солод' },
   { src: photoHops, alt: 'Хмель засыпают в котёл', caption: 'А это — хмель' },
-  { src: photoTeam, alt: 'Команда на экскурсии по заводу', caption: 'А это — твоя будущая команда' },
+  { src: photoTeam, alt: 'Команда на экскурсии по заводу', caption: 'Экскурсия по нашим цехам' },
 ]
 
 const CONTACTS: { href: string; label: string; value: string; icon: ReactNode }[] = [
@@ -240,6 +240,9 @@ export function Landing({ onPlay, scrollTo }: Props) {
             </div>
           </div>
           <div className="hero-media">
+            <div className="peek" aria-hidden="true">
+              <img src={mascot} alt="" />
+            </div>
             <Pattern className="pattern" />
             <button
               type="button"
@@ -305,7 +308,12 @@ export function Landing({ onPlay, scrollTo }: Props) {
         {/* Игра — карточка-бокал: отсюда запускаются игры из реестра */}
         <section id="game" className="game">
           <div className="glass-card">
-            <Pattern className="pattern pattern-game" />
+            <div className="game-media">
+              <div className="peek" aria-hidden="true">
+                <img src={mascot} alt="" />
+              </div>
+              <Pattern className="pattern" />
+            </div>
             <div className="game-text">
               <span className="tag">
                 <i />
@@ -378,7 +386,27 @@ export function Landing({ onPlay, scrollTo }: Props) {
                 ))}
               </div>
               <div className="ph place">
-                <img src={photoPlant} alt="Здание завода Очаково" loading="lazy" />
+                <svg className="map" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Карта: завод Очаково на ул. Рябиновой">
+                  <path className="map-water" d="M-10 175 C70 150 120 205 210 180 S350 150 410 185 L410 230 L-10 230 Z" />
+                  <g className="map-block">
+                    <rect x="20" y="20" width="90" height="55" rx="6" />
+                    <rect x="130" y="20" width="70" height="55" rx="6" />
+                    <rect x="20" y="95" width="90" height="45" rx="6" />
+                    <rect x="230" y="20" width="60" height="45" rx="6" />
+                    <rect x="310" y="20" width="75" height="100" rx="6" />
+                    <rect x="230" y="85" width="60" height="55" rx="6" />
+                  </g>
+                  <g className="map-road">
+                    <path d="M-10 85 H410" />
+                    <path d="M120 -10 V160" />
+                    <path d="M300 -10 V160" />
+                    <path className="map-main" d="M-10 150 L410 128" />
+                  </g>
+                  <g className="map-dot" transform="translate(205 85)">
+                    <circle className="map-pulse" r="22" />
+                    <circle r="9" />
+                  </g>
+                </svg>
                 <div className="pin">
                   <small>Адрес</small>
                   <b>Москва, ул. Рябиновая, 44</b>

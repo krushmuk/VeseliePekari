@@ -34,11 +34,17 @@ export function onDocumentHidden(cb: (hidden: boolean) => void) {
   return () => document.removeEventListener('visibilitychange', handler)
 }
 
-/** Системное окно «Поделиться», если есть; иначе копируем текст со ссылкой в буфер обмена */
-export async function webShare(text: string, url: string): Promise<'shared' | 'copied' | 'failed'> {
+/** Системное окно «Поделиться» (с картинкой, если поддерживается); иначе копируем текст со ссылкой в буфер обмена */
+export async function webShare(text: string, url: string, image?: Blob): Promise<'shared' | 'copied' | 'failed'> {
   try {
     if (navigator.share) {
-      await navigator.share({ text, url })
+      const files = image ? [new File([image], 'ochak.png', { type: 'image/png' })] : []
+      if (files.length && navigator.canShare?.({ files })) {
+        // ссылку кладём в текст: при отправке файла она иначе может потеряться
+        await navigator.share({ files, text: `${text} ${url}` })
+      } else {
+        await navigator.share({ text, url })
+      }
       return 'shared'
     }
     await navigator.clipboard.writeText(`${text} ${url}`)

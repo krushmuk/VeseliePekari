@@ -19,7 +19,7 @@ export interface Platform {
   /** Игра ушла в фон (свернули, переключили вкладку) или вернулась */
   onSuspend(cb: (suspended: boolean) => void): () => void
   /** Поделиться: системное окно, в Telegram — выбор чата; иначе ссылка копируется в буфер */
-  share(text: string, url: string): Promise<'shared' | 'copied' | 'failed'>
+  share(text: string, url: string, image?: Blob): Promise<'shared' | 'copied' | 'failed'>
   user: { id: string; name: string } | null
   /** Параметр запуска: t.me/<bot>/<app>?startapp=<значение> */
   startParam: string | null

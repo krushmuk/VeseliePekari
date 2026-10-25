@@ -110,7 +110,12 @@ export function createTelegramPlatform(tg: TgWebApp): Platform {
         tg.offEvent('deactivated', offEv)
       }
     },
-    share: async (text, url) => {
+    share: async (text, url, image) => {
+      // с картинкой пробуем системное окно (если WebView умеет делиться файлами), иначе — обычная ссылка Telegram
+      if (image && navigator.canShare?.({ files: [new File([image], 'ochak.png', { type: 'image/png' })] })) {
+        const result = await webShare(text, url, image)
+        if (result !== 'failed') return result
+      }
       if (!at('6.1')) return webShare(text, url)
       tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`)
       return 'shared'
