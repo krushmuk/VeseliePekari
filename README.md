@@ -4,7 +4,7 @@
 
 Работает в браузере на компьютере и телефоне.
 
-**Играть:** https://pekari.site
+**Играть:** https://pekari.site \
 **Аналитика и текстовая часть** https://drive.google.com/drive/folders/1AvrgyHfkJRCUR6r9xFbKsByx84Q9gSn8
 
 ## Стек
